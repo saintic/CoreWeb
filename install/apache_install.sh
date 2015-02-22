@@ -46,7 +46,7 @@ fi
 iptables -I INPUT -p tcp --dport 80 -j ACCEPT
 service iptables save
 
-apachectl -t && echo $? &> /dev/null
+/usr/local/apache/bin/apachectl -t && echo $? &> /dev/null
 if [ $? = "0" ]
 	then
 	echo "Apache搭建完毕!"

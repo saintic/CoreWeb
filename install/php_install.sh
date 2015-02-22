@@ -24,7 +24,7 @@ read -p "请输入您希望的PHP安装根目录,默认/usr/local/php/请按Ente
 	fi
 echo "------------------------------------------------------------"
 
-function PHP-FPM() {
+function PHP_FPM() {
 	cp php-fpm.conf.default php-fpm.conf
 	sed -i "s/user = nobody/user = ${NGINX_USER}/g" php-fpm.conf
 	sed -i "s/group = nobody/group = ${NGINX_GROUP}/g" php-fpm.conf
@@ -44,12 +44,12 @@ function PHP_TYPE_CONF() {
 			./configure --prefix=/usr/local/php --with-config-file-path=/etc --enable-fpm --with-mysql=$MYSQL_HOME --with-mysqli=${MYSQL_HOME}/bin/mysql_config --with-iconv --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir --enable-xml --enable-inline-optimization --with-curl --enable-mbstring --with-mhash --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl --enable-sockets --with-pdo-mysql --enable-pdo --enable-zip --enable-soap --enable-ftp  --enable-shmop --with-bz2 --enable-exif --with-gettext
 			make && make install
 			cd /usr/local/php/etc/
-			PHP-FPM
+			PHP_FPM
 		else
 			./configure --prefix=$PHP_HOME --with-config-file-path=/etc --enable-fpm --with-mysql=$MYSQL_HOME --with-mysqli=${MYSQL_HOME}/bin/mysql_config --with-iconv --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir --enable-xml --enable-inline-optimization --with-curl --enable-mbstring --with-mhash --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl --enable-sockets --with-pdo-mysql --enable-pdo --enable-zip --enable-soap --enable-ftp  --enable-shmop --with-bz2 --enable-exif --with-gettext
 			make && make install
 			cd ${PHP_HOME}/etc/
-			PHP-FPM
+			PHP_FPM
 		fi
 	fi
 }

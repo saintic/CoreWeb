@@ -65,7 +65,7 @@ if [ $? = "0" ]; then
 	./configure --with-libevent=/usr && make && make install
 	
 	#No.3 memcache api
-	cd $PACKAGE_PATH ; tar zxf memcache-api.tgz
+	cd $PACKAGE_PATH ; tar zxf memcache-api.tar.gz
 	cd memcache-2.2.4
 	if [ "$PHP_HOME" = "" ]
 	then

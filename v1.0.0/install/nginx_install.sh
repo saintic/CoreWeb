@@ -12,7 +12,7 @@ echo "Nginx根目录位于/usr/local/nginx/,程序用户是nginx，服务名是n
 HEAD
 if [ $? = "0" ]; then
 	DOWNLOAD_NGINX
-	yum -y install pcre pcre-devel gcc gcc-c++ zlib-devel openssl-devel
+	yum -y install bzip2 gzip pcre pcre-devel gcc gcc-c++ zlib-devel openssl-devel
 	cd $PACKAGE_PATH ; tar zxf nginx-1.6.2.tar.gz ; cd nginx-1.6.2
 	groupadd -g 80 nginx ; useradd -M -s /sbin/nologin -u 80 -g nginx nginx
 	./configure --prefix=/usr/local/nginx --sbin-path=/usr/sbin/ --user=nginx --group=nginx  --with-poll_module  --with-file-aio  --with-http_ssl_module --with-http_gzip_static_module --with-http_stub_status_module  --with-pcre

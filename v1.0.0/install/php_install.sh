@@ -57,8 +57,8 @@ function PHP_TYPE_CONF() {
 HEAD
 if [ $? = "0" ] && [ $ARCH = "x86_64" ]; then
     cd $PACKAGE_PATH
-    DOWNLOAD_PHP
-    yum -y install zunip ; unzip php.zip
+	DOWNLOAD_PHP
+	yum -y install unzip ; unzip php.zip
 	yum -y remove php ; yum -y install bzip2 gzip libxml2-devel libtool pcre-devel ncurses-devel bison-devel gcc-c++ gcc make cmake expat-devel zlib-devel gd-devel libcurl-devel bzip2-devel readline-devel libedit-devel perl neon-devel openssl-devel cyrus-sasl-devel php-mbstring php-bcmath gettext-devel curl-devel libjpeg-devel libpng-devel
 	tar zxf libmcrypt-2.5.7.tar.gz
 	tar zxf mhash-0.9.2.tar.gz

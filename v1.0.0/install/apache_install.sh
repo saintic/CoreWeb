@@ -11,7 +11,7 @@ echo "Apache根目录位于/usr/local/apache,配置文件是/etc/httpd/httpd.con
 HEAD
 if [ $? = "0" ]; then
 	DOWNLOAD_APACHE
-	yum -y install libtool pcre-devel gcc-c++ gcc cmake expat-devel zlib-devel neon-devel openssl-devel cyrus-sasl-devel
+	yum -y install bzip2 gzip libtool pcre-devel gcc-c++ gcc cmake expat-devel zlib-devel neon-devel openssl-devel cyrus-sasl-devel
     #1.Apr,Apr-util
 	cd $PACKAGE_PATH
 	tar zxf apr-1.2.12.tar.gz

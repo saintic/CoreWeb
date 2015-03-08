@@ -25,7 +25,7 @@ if [ "$MEMCACHED" = "" ]; then
 	cd $PACKAGE_PATH ; tar zxf memcached-api.tar.gz ; cd memcahed-2.2.0
 	if [ "$PHP_HOME" = "" ]; then
 		/usr/local/php/bin/phpize
-		./configure --enable-memcached --with-libmemcached-dir=/usr/local/libmemcached/  --with-php-config=/usr/local/php/bin/php-config  --enable-memcached-json --disable-memcached-sasl && make && make test
+		./configure --enable-memcached --with-libmemcached-dir=/usr/local/libmemcached/  --with-php-config=/usr/local/php/bin/php-config  --enable-memcached-json --disable-memcached-sasl && make
 		make install > /tmp/memcached-api
 		EXT2=$(tail -1 /tmp/memcached-api | awk -F: '{print $2}' | awk '{print $1}')
 		if [ -e /usr/local/php/etc/php.ini ]; then

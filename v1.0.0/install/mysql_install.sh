@@ -7,7 +7,7 @@ ROOT_INSTALL=$(cd `dirname $0`; pwd)
 
 clear
 HEAD && DOWNLOAD_MYSQL || exit 1
-yum remove mysql-server ; yum -y install gcc gcc-c++ cmake ncurses-devel mysql
+yum remove mysql-server ; yum -y install gzip bzip2 gcc gcc-c++ cmake ncurses-devel mysql
 useradd -M -s /sbin/nologin -u 27 mysql
 cd $PACKAGE_PATH ; tar zxf mysql-5.5.20.tar.gz
 cd mysql-5.5.20

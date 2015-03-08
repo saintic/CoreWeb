@@ -13,31 +13,30 @@ read -p "请输入PHP安装根目录，如果是默认的/usr/local/php/则按En
 read -p "请输入网站根目录,以部署MongoDB控制台MongoAdmin;如果不需此项,请输入N/n：" WEB_HOME
 echo "遵从GPL协议,允许自行修改代码,定制请于网站中联系作者,转载请注明出处,终止脚本按Ctrl+C组合键！"
 
-HEAD && DOWNLOAD_MONGO || exit 1
+if [ "$PHP_HOME" = "" ]; then
+        PHP_HOME=/usr/local/php
+else
+        PHP_HOME=$PHP_HOME
+fi
 
+HEAD && DOWNLOAD_MONGO || exit 1
+rpm -q gzip || yum -y install gzip
 if [ "$ARCH" = "x86_64" ]; then
 	cd $PACKAGE_PATH ; tar zxf mongodb-linux-x86_64-2.6.5.tgz
 	mv mongodb-linux-x86_64-2.6.5 $MONGO_HOME
-	mkdir ${MONGO_HOME}/data ; touch ${MONGO_HOME}/mongod.logs
-	echo "dbpath = $MONGO_HOME/data
-logpath = $MONGO_HOME/mongod.logs
-logappend = true
-port = 27017
-fork = true
-auth = true" > ${MONGO_HOME}/mongod.conf
-	$MONGO_HOME/bin/mongod -f $MONGO_HOME/mongod.conf &> /dev/null
 else
 	cd $PACKAGE_PATH ; tar zxf mongodb-linux-i686-2.6.5.gz
 	mv mongodb-linux-i686-2.6.5 $MONGO_HOME
-	mkdir ${MONGO_HOME}/data ; touch ${MONGO_HOME}/mongod.logs
-	echo "dbpath = ${MONGO_HOME}/data
+fi
+
+mkdir ${MONGO_HOME}/data ; touch ${MONGO_HOME}/mongod.logs
+echo "dbpath = ${MONGO_HOME}/data
 logpath = ${MONGO_HOME}/mongod.logs
 logappend = true
 port = 27017
 fork = true
 auth = true" > ${MONGO_HOME}mongod.conf
-	${MONGO_HOME}/bin/mongod -f ${MONGO_HOME}/mongod.conf &> /dev/null
-fi
+${MONGO_HOME}/bin/mongod -f ${MONGO_HOME}/mongod.conf &> /dev/null
 
 echo "PATH=$PATH:${MONGO_HOME}/bin" >> /etc/profile
 source /etc/profile
@@ -64,27 +63,14 @@ fi
 
 #php-mongo api
 cd $PACKAGE_PATH ; tar zxf mongo-1.5.7.tgz ; cd mongo-1.5.7
-if [ "$PHP_HOME" = "" ]
+${PHP_HOME}/bin/phpize
+./configure --enable-mongo --with-php-config=${PHP_HOME}/bin/php-config
+make && make test
+make install > /tmp/mongo-api
+EXT=$(tail -1 /tmp/mongo-api | awk -F: '{print $2}' | awk '{print $1}')
+if [ -e ${PHP_HOME}/etc/php.ini ]
 	then
-		/usr/local/php/bin/phpize 
-		./configure --enable-mongo --with-php-config=/usr/local/php/bin/php-config
-		make && make test && make install > /tmp/mongo-api
-		EXT=$(tail -1 /tmp/mongo-api | awk -F: '{print $2}' | awk '{print $1}')
-		if [ -e /usr/local/php/etc/php.ini ]
-			then
-				echo "extension=${EXT}mongo.so" >> /usr/local/php/etc/php.ini
-			else
-			    echo "extension=${EXT}mongo.so" >> /etc/php.ini
-		fi
+		echo "extension=${EXT}mongo.so" >> ${PHP_HOME}/etc/php.ini
 	else
-		${PHP_HOME}/bin/phpize
-		./configure --enable-mongo --with-php-config=${PHP_HOME}/bin/php-config
-		make && make test && make install > /tmp/mongo-api
-		EXT=$(tail -1 /tmp/mongo-api | awk -F: '{print $2}' | awk '{print $1}')
-		if [ -e ${PHP_HOME}/etc/php.ini ]
-			then
-				echo "extension=${EXT}mongo.so" >> ${PHP_HOME}/etc/php.ini
-			else
-			    echo "extension=${EXT}mongo.so" >> /etc/php.ini
-		fi
+	    echo "extension=${EXT}mongo.so" >> /etc/php.ini
 fi

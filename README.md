@@ -5,7 +5,13 @@ The project is designed for LANMP and NoSQL, language is shell. Currently, the p
 Of course, we follow the GPL, allow free modification. reprint please indicate the source.
 
 ****
-###　　　　　　　　　   Author:www.saintic.com  
+
+这个项目用于LANMP和NoSQL部署，使用shell script语言，当前版本是v2.0.0; 我们将继续关注并修改CoreWeb项目。
+
+CoreWeb遵循GPL(v2)协议，允许自由修改，转载请注明出处！
+
+****
+###　　　　　　　　　     Author:saintic.com  
 ###　　　　　　　　　 E-mail:staugur@saintic.com
 
 ===========================

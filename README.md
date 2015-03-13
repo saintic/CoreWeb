@@ -5,8 +5,8 @@ The project is designed for LANMP and NoSQL, language is shell. Currently, the p
 Of course, we follow the GPL, allow free modification. reprint please indicate the source.
 
 ****
-###　　　　　　　　　　　　Author:www.saintic.com
-###　　　　　　　　　 E-mail:879231132@qq.com
+###　　　　　　　　　   Author:www.saintic.com
+###　　　　　　　　　 E-mail:staugur@saintic.com
 
 ===========================
 

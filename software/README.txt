@@ -1,0 +1,1 @@
+确保存在CoreWeb/software目录！

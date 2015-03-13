@@ -1,8 +1,15 @@
-# CoreWeb 
-
-The project is designed for LANMP and NoSQL, language is shell. Currently, the project version is v1.0.0, we will continue to pay close attention to and modify it.
+CoreWeb
+===========================
+The project is designed for LANMP and NoSQL, language is shell. Currently, the project version is v2.0.0, we will continue to pay close attention to and modify it.
 
 Of course, we follow the GPL, allow free modification. reprint please indicate the source.
+
+****
+###　　　　　　　　　　　　Author:www.saintic.com
+###　　　　　　　　　 E-mail:879231132@qq.com
+
+===========================
+
 
 This project is divided into two parts:
 	The first part:LANMP

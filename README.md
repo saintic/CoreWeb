@@ -11,7 +11,7 @@ Of course, we follow the GPL, allow free modification. reprint please indicate t
 CoreWeb遵循GPL(v2)协议，允许自由修改，转载请注明出处！
 
 ****
-###　　　　　　　　　        Author:saintic.com  
+###　　　　　　　　　         Author:saintic.com
 ###　　　　　　　　　 E-mail:staugur@saintic.com
 
 ===========================
@@ -27,5 +27,5 @@ Release Notes:
 	Version 1.0.0,目前仅支持单项服务,软硬件方面仅支持CentOS/RHEL6.x 64位架构操作系统；V1版本后续会针对5.x、7.x 32Bit、64Bit系列做出改进！
 
 Setup Steps: <br>
-    sh index.sh \<br>
+    sh index.sh <br>
 END

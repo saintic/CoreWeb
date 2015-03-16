@@ -1,1 +1,1 @@
-确保存在CoreWeb/software目录！
+Please make sure that the existence of this directory software!

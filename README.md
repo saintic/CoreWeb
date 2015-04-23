@@ -27,5 +27,8 @@ Release Notes:
 	Version 2.0.0,不仅支持多项服务同时部署,亦支持Linux多架构多系统,并会针对服务器环境动态修改配置文件！
 
 Setup Steps:
+****
 	sh index.sh
+****
 END
+

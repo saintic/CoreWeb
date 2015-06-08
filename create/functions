@@ -8,7 +8,7 @@ REDIS_VERSION=3.0.1
 PACKAGE_PATH="/data/software"
 #修改下面变量值可更改应用程序安装父目录,比如/usr/local
 APP_PATH="/data/app"
-lock="/var/lock/subsys/sdi.lock"
+lock="/var/lock/subsys/coreweb.sdi.lock"
 
 cat<<EOF
 ############################################################
@@ -63,7 +63,7 @@ rm -f $lock
 CREATE_NGINX() {
 HEAD || ERROR
 [ -f $lock ] && echo "Please run \"rm -f $lock\", then run again." && exit 1 || touch $lock
-grep "www" /etc/passwd &> /dev/null || useradd -M -s /sbin/nologin www
+awk -F : '{print $1}' /etc/passwd | grep "www" || useradd -M -s /sbin/nologin www
 if [ -f $PACKAGE_PATH/nginx-${NGINX_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/nginx-$NGINX_VERSION ] ; then
   rm -rf $PACKAGE_PATH/nginx-${NGINX_VERSION}*
 fi
@@ -77,7 +77,7 @@ CREATE_MYSQL() {
 HEAD || ERROR
 [ -f $lock ] && echo "Please run \"rm -f $lock\", then run again." && exit 1 || touch $lock
 yum -y install tar gzip bzip2 gcc gcc-c++ cmake ncurses-devel mysql wget
-grep "mysql" || useradd -M -s /sbin/nologin mysql
+awk -F : '{print $1}' /etc/passwd  | grep "mysql" || useradd -M -s /sbin/nologin mysql
 if [ -f $PACKAGE_PATH/mysql-${MYSQL_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/mysql-${MYSQL_VERSION} ] ; then
   rm -rf $PACKAGE_PATH/mysql-${MYSQL_VERSION}*
 fi
@@ -169,7 +169,7 @@ HEAD || ERROR
 if [ -f $PACKAGE_PATH/redis-${REDIS_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/redis-${REDIS_VERSION} ] ; then
   rm -rf $PACKAGE_PATH/redis-${REDIS_VERSION}*
 fi
-cd $PACKAGE_PATH ; wget -c http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz || wget -c https://codeload.github.com/antirez/redis/tar.gz/$REDIS_VERSION
+cd $PACKAGE_PATH ; wget -c http://download.redis.io/releases/redis-${REDIS_VERSION}.tar.gz || wget -c https://codeload.github.com/antirez/redis/tar.gz/$REDIS_VERSION && mv $REDIS_VERSION redis-${REDIS_VERSION}.tar.gz
 tar zxf redis-${REDIS_VERSION}.tar.gz ; cd redis-$REDIS_VERSION
 make
 make install
@@ -222,7 +222,7 @@ if [ -f $PACKAGE_PATH/libevent-2.0.22-stable.tar.gz ] || [ -d $PACKAGE_PATH/libe
 fi
 #libevent
 cd $PACKAGE_PATH ; wget -c http://jaist.dl.sourceforge.net/project/levent/libevent/libevent-2.0/libevent-2.0.22-stable.tar.gz
-[ "$?" -ne 0 ] && wget -c https://codeload.github.com/libevent/libevent/tar.gz/release-2.0.22-stable && mv libevent-release-2.0.22-stable.tar.gz libevent-2.0.22-stable.tar.gz
+[ "$?" -ne 0 ] && wget -c https://codeload.github.com/libevent/libevent/tar.gz/release-2.0.22-stable && mv release-2.0.22-stable libevent-2.0.22-stable.tar.gz
 tar zxf libevent-2.0.22-stable.tar.gz ; cd libevent-2.0.22-stable
 ./configure --prefix=/usr/ && make && make install
 #memcache
@@ -285,7 +285,7 @@ local memcached_api_version=2.2.0
 cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/memcached-${memcached_api_version}.tgz
 tar zxf memcached-${memcached_api_version}.tgz ; cd memcached-$memcached_api_version
 ${APP_PATH}/php/bin/phpize
-./configure --enable-memcached --with-libmemcached-dir=/usr/local/libmemcached/   --with-php-config=${APP_PATH}/php/bin/php-config  --enable-memcached-json --disable-memcached-sasl
+./configure --enable-memcached --with-libmemcached-dir=/usr/local/libmemcached/ --with-php-config=${APP_PATH}/php/bin/php-config  --enable-memcached-json --disable-memcached-sasl
 make
 make test <<EOF
 n

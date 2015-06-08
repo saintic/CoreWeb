@@ -4,10 +4,23 @@ HTTPD_VERSION=2.2.4
 MYSQL_VERSION=5.5.20
 PHP_VERSION=5.6.2
 REDIS_VERSION=3.0.1
+#修改下面变量值可更改应用程序源码目录
 PACKAGE_PATH="/data/software"
+#修改下面变量值可更改应用程序安装父目录,比如/usr/local
 APP_PATH="/data/app"
 lock="/var/lock/subsys/sdi.lock"
-SYS_VERSION=$(awk -F "release" '{print $2}' /etc/redhat-release | awk '{print $1}' | awk -F . '{print $1}')
+
+cat<<EOF
+############################################################
+##           程序版本请修改functions下各参数。            ##
+##              若程序出错请查看错误信息。                ##
+##作者信息:                                               ##
+##    Author:   SaintIC                                   ##
+##    QQ:       1663116375                                ##
+##    Phone:    18201707941                               ##
+##    Design:   https://saintic.com/DIY                   ##   
+############################################################
+EOF
 
 function HEAD() {
   if [ $(id -u) != "0" ]; then
@@ -38,12 +51,12 @@ yum -y install tar bzip2 gzip libtool pcre-devel gcc-c++ gcc cmake make expat-de
 if [ -f $PACKAGE_PATH/httpd-${HTTPD_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/httpd-$HTTPD_VERSION ] ; then
   rm -rf $PACKAGE_PATH/httpd-${HTTPD_VERSION}*
 fi
-cd $PACKAGE_PATH ; wget -c http://archive.apache.org/dist/httpd/httpd-${HTTPD_VERSION}.tar.gz \
+cd $PACKAGE_PATH ; wget -c http://archive.apache.org/dist/httpd/httpd-${HTTPD_VERSION}.tar.gz
 tar zxf httpd-${HTTPD_VERSION}.tar.gz ; cd httpd-${HTTPD_VERSION}
 ./configure  --prefix=${APP_PATH}/apache --enable-mods-shared=most --enable-modules=most --enable-so --enable-rewrite=shared --enable-ssl=shared --with-ssl --enable-cgi && make && make install
-cp ${APP_PATH}/apache/bin/apachectl /etc/init.d/httpd
+cp ${APP_PATH}/apache/sbin/apachectl /etc/init.d/httpd
 sed -i "s/#ServerName www.example.com:80/ServerName www.saintic.com/g" ${APP_PATH}/apache/conf/httpd.conf
-${APP_PATH}/apache/bin/apachectl -t
+${APP_PATH}/apache/sbin/apachectl -t
 rm -f $lock
 }
 
@@ -90,7 +103,7 @@ if [ -f $PACKAGE_PATH/php-${PHP_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/php-${PH
   rm -rf $PACKAGE_PATH/php-${PHP_VERSION}*
 fi
 yum -y remove php ; yum -y install tar bzip2 gzip libxml2-devel libtool pcre-devel ncurses-devel bison-devel gcc-c++ gcc make cmake expat-devel zlib-devel gd-devel libcurl-devel bzip2-devel readline-devel libedit-devel perl neon-devel openssl-devel cyrus-sasl-devel php-mbstring php-bcmath gettext-devel curl-devel libjpeg-devel libpng-devel
-cd $PACKAGE_PATH ; wget -c http://mirrors.sohu.com/php/php-${PHP_VERSION}.tar.gz \
+cd $PACKAGE_PATH ; wget -c http://mirrors.sohu.com/php/php-${PHP_VERSION}.tar.gz
 wget -c https://software.saintic.com/core/web/php-lib.tar.gz
 tar zxf php-lib.tar.gz
 tar zxf libmcrypt-2.5.7.tar.gz
@@ -219,7 +232,7 @@ fi
 cd $PACKAGE_PATH ;  wget -c  http://memcached.org/files/memcached-1.4.24.tar.gz
 tar zxf memcached-1.4.24.tar.gz ; cd memcached-1.4.24
 ./configure --with-libevent=/usr && make && make install
-#listen bind 127.0.0.1
+#/usr/local/bin/memcached -d -u root -l 127.0.0.1
 rm -f $lock
 }
 

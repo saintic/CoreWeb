@@ -1,3 +1,3 @@
 #!/bin/bash
 . ./functions
-HEAD && CREATE_HTTP
+CREATE_HTTP

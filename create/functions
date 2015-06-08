@@ -54,9 +54,9 @@ fi
 cd $PACKAGE_PATH ; wget -c http://archive.apache.org/dist/httpd/httpd-${HTTPD_VERSION}.tar.gz
 tar zxf httpd-${HTTPD_VERSION}.tar.gz ; cd httpd-${HTTPD_VERSION}
 ./configure  --prefix=${APP_PATH}/apache --enable-mods-shared=most --enable-modules=most --enable-so --enable-rewrite=shared --enable-ssl=shared --with-ssl --enable-cgi && make && make install
-cp ${APP_PATH}/apache/sbin/apachectl /etc/init.d/httpd
+cp ${APP_PATH}/apache/bin/apachectl /etc/init.d/httpd
 sed -i "s/#ServerName www.example.com:80/ServerName www.saintic.com/g" ${APP_PATH}/apache/conf/httpd.conf
-${APP_PATH}/apache/sbin/apachectl -t
+${APP_PATH}/apache/bin/apachectl -t
 rm -f $lock
 }
 

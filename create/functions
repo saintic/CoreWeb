@@ -102,6 +102,9 @@ HEAD || ERROR
 if [ -f $PACKAGE_PATH/php-${PHP_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/php-${PHP_VERSION} ] ; then
   rm -rf $PACKAGE_PATH/php-${PHP_VERSION}*
 fi
+rm -rf ${PACKAGE_PATH}/libmcrypt-*
+rm -rf ${PACKAGE_PATH}/mcrypt-*
+rm -rf ${PACKAGE_PATH}/mhash-*
 yum -y remove php ; yum -y install tar bzip2 gzip libxml2-devel libtool pcre-devel ncurses-devel bison-devel gcc-c++ gcc make cmake expat-devel zlib-devel gd-devel libcurl-devel bzip2-devel readline-devel libedit-devel perl neon-devel openssl-devel cyrus-sasl-devel php-mbstring php-bcmath gettext-devel curl-devel libjpeg-devel libpng-devel
 cd $PACKAGE_PATH ; wget -c http://mirrors.sohu.com/php/php-${PHP_VERSION}.tar.gz
 wget -c https://software.saintic.com/core/web/php-lib.tar.gz || wget -c ftp://download.saintic.com/web/php-lib.tar.gz

@@ -22,6 +22,7 @@ print "Update Services: Input enter your number."
 print "  0:update the service version!"
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 codenum=int(raw_input('Please select code number:'))
-print 'Your select: codenum'
+print 'Your select:',codenum
+
 
     

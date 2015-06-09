@@ -7,12 +7,11 @@ $0 args:
 EOF
 exit 1
 fi
-
+. ./functions
 if [ "$1" == "httpd" ]; then
-  :
+  CREATE_PHP $1
 elif [ "$1" == "nginx" ]; then
   [ -z $2 ] && exit 1
   id -u $2 &> /dev/null || useradd -M -s /sbin/nologin $2
+  CREATE_PHP $1 $2
 fi
-. ./functions
-CREATE_PHP

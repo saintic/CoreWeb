@@ -63,7 +63,7 @@ rm -f $lock
 CREATE_NGINX() {
 HEAD || ERROR
 [ -f $lock ] && echo "Please run \"rm -f $lock\", then run again." && exit 1 || touch $lock
-awk -F : '{print $1}' /etc/passwd | grep "www" || useradd -M -s /sbin/nologin www
+id -u www &> /dev/null || useradd -M -s /sbin/nologin www
 if [ -f $PACKAGE_PATH/nginx-${NGINX_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/nginx-$NGINX_VERSION ] ; then
   rm -rf $PACKAGE_PATH/nginx-${NGINX_VERSION}*
 fi
@@ -77,7 +77,7 @@ CREATE_MYSQL() {
 HEAD || ERROR
 [ -f $lock ] && echo "Please run \"rm -f $lock\", then run again." && exit 1 || touch $lock
 yum -y install tar gzip bzip2 gcc gcc-c++ cmake ncurses-devel mysql wget
-awk -F : '{print $1}' /etc/passwd  | grep "mysql" || useradd -M -s /sbin/nologin mysql
+id -u mysql &> /dev/null || useradd -M -s /sbin/nologin mysql
 if [ -f $PACKAGE_PATH/mysql-${MYSQL_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/mysql-${MYSQL_VERSION} ] ; then
   rm -rf $PACKAGE_PATH/mysql-${MYSQL_VERSION}*
 fi
@@ -104,7 +104,7 @@ if [ -f $PACKAGE_PATH/php-${PHP_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/php-${PH
 fi
 yum -y remove php ; yum -y install tar bzip2 gzip libxml2-devel libtool pcre-devel ncurses-devel bison-devel gcc-c++ gcc make cmake expat-devel zlib-devel gd-devel libcurl-devel bzip2-devel readline-devel libedit-devel perl neon-devel openssl-devel cyrus-sasl-devel php-mbstring php-bcmath gettext-devel curl-devel libjpeg-devel libpng-devel
 cd $PACKAGE_PATH ; wget -c http://mirrors.sohu.com/php/php-${PHP_VERSION}.tar.gz
-wget -c https://software.saintic.com/core/web/php-lib.tar.gz
+wget -c https://software.saintic.com/core/web/php-lib.tar.gz || wget -c ftp://download.saintic.com/web/php-lib.tar.gz
 tar zxf php-lib.tar.gz
 tar zxf libmcrypt-2.5.7.tar.gz
 tar zxf mhash-0.9.2.tar.gz

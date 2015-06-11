@@ -30,7 +30,7 @@ s() {
 }
 f() {
   echo "Update failed."
-  mv /tmp/nginx $exec && echo "Has rolled back."
+  mv -f /tmp/nginx $exec && echo "Has rolled back."
 }
 
 $exec -v &> /dev/null && s || f

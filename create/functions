@@ -4,23 +4,22 @@ HTTPD_VERSION=2.2.4
 MYSQL_VERSION=5.5.20
 PHP_VERSION=5.6.2
 REDIS_VERSION=3.0.1
-#修改下面变量值可更改应用程序源码目录
 PACKAGE_PATH="/data/software"
-#修改下面变量值可更改应用程序安装父目录,比如/usr/local
 APP_PATH="/data/app"
-lock="/var/lock/subsys/coreweb.sdi.lock"
+lock="/var/lock/subsys/paas.sdi.lock"
+CPU=$(grep "processor" /proc/cpuinfo | wc -l)
+MEM=$(free -m | awk '/Mem:/{print $2}')
 
 cat<<EOF
-############################################################
-##           程序版本请修改functions下各参数。            ##
-##              若程序出错请查看错误信息。                ##
-##作者信息:                                               ##
-##    Author:   SaintIC                                   ##
-##    QQ:       1663116375                                ##
-##    Phone:    18201707941                               ##
-##    Design:   https://saintic.com/diy/                  ##
-##    Indexer:  https://saintic.com/corrweb/              ##
-############################################################
+####################################################
+##           程序版本请修改functions下各参数。                                              ##
+##              若程序出错请查看错误信息。                                                       ##
+##作者信息:                                                                                               ##
+##    Author:   SaintIC                                                                             ##
+##    QQ：        1663116375                                                                    ##
+##    Phone:    18201707941                                                                  ##
+##    Design:   https://saintic.com/DIY                                                ##   
+###################################################
 EOF
 
 function HEAD() {
@@ -236,7 +235,7 @@ fi
 cd $PACKAGE_PATH ;  wget -c  http://memcached.org/files/memcached-1.4.24.tar.gz
 tar zxf memcached-1.4.24.tar.gz ; cd memcached-1.4.24
 ./configure --with-libevent=/usr && make && make install
-#/usr/local/bin/memcached -d -u root -l 127.0.0.1
+#listen bind 127.0.0.1
 rm -f $lock
 }
 

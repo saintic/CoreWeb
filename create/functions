@@ -12,14 +12,14 @@ MEM=$(free -m | awk '/Mem:/{print $2}')
 
 cat<<EOF
 ####################################################
-##           程序版本请修改functions下各参数。                                              ##
-##              若程序出错请查看错误信息。                                                       ##
-##作者信息:                                                                                               ##
-##    Author:   SaintIC                                                                             ##
-##    QQ：        1663116375                                                                    ##
-##    Phone:    18201707941                                                                  ##
-##    Design:   https://saintic.com/DIY                                                ##   
-###################################################
+##           程序版本请修改functions下各参数。    ##
+##              若程序出错请查看错误信息。        ##
+##作者信息:                                       ##
+##    Author:   SaintIC                           ##
+##    QQ：      1663116375                        ##
+##    Phone:    18201707941                       ##
+##    Design:   https://saintic.com/DIY           ##   
+####################################################
 EOF
 
 function HEAD() {
@@ -57,6 +57,11 @@ tar zxf httpd-${HTTPD_VERSION}.tar.gz ; cd httpd-${HTTPD_VERSION}
 cp ${APP_PATH}/apache/bin/apachectl /etc/init.d/httpd
 sed -i "s/#ServerName www.example.com:80/ServerName www.saintic.com/g" ${APP_PATH}/apache/conf/httpd.conf
 ${APP_PATH}/apache/bin/apachectl -t
+if [ $? -eq  ]; then
+  echo "Start:/etc/init.d/httpd start"
+else
+  echo "Please check httpd.conf"
+fi
 rm -f $lock
 }
 
@@ -70,6 +75,11 @@ fi
 yum -y install tar bzip2 gzip pcre pcre-devel gcc gcc-c++ zlib-devel wget openssl-devel ; cd $PACKAGE_PATH ; wget -c http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar zxf nginx-${NGINX_VERSION}.tar.gz && cd nginx-$NGINX_VERSION
 ./configure --prefix=${APP_PATH}/nginx --user=www --group=www --with-poll_module  --with-http_ssl_module --with-http_gzip_static_module --with-http_stub_status_module --with-http_realip_module --with-pcre && make && make install
 ${APP_PATH}/nginx/sbin/nginx -t
+if [ $? -eq  ]; then
+  echo "Start:/etc/init.d/nginx start"
+else
+  echo "Please check nginx.conf"
+fi
 rm -f $lock
 }
 
@@ -90,8 +100,12 @@ chown -R mysql:mysql ${APP_PATH}/mysql
 ${APP_PATH}/mysql/scripts/mysql_install_db --basedir=${APP_PATH}/mysql --datadir=${APP_PATH}/mysql/data --user=mysql
 cp ${APP_PATH}/mysql/support-files/mysql.server /etc/init.d/mysqld
 chkconfig --add mysqld
+if [ $? -eq  ]; then
+  echo "Start:/etc/init.d/mysqld start"
+else
+  echo "Please check my.cnf"
+fi
 rm -f $lock
-exit 0
 }
 
 CREATE_PHP() {

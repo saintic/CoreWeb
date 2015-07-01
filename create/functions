@@ -75,7 +75,7 @@ fi
 yum -y install tar bzip2 gzip pcre pcre-devel gcc gcc-c++ zlib-devel wget openssl-devel ; cd $PACKAGE_PATH ; wget -c http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar zxf nginx-${NGINX_VERSION}.tar.gz && cd nginx-$NGINX_VERSION
 ./configure --prefix=${APP_PATH}/nginx --user=www --group=www --with-poll_module  --with-http_ssl_module --with-http_gzip_static_module --with-http_stub_status_module --with-http_realip_module --with-pcre && make && make install
 ${APP_PATH}/nginx/sbin/nginx -t
-if [ $? -eq  ]; then
+if [ $? -eq 0 ]; then
   echo "Start:/etc/init.d/nginx start"
 else
   echo "Please check nginx.conf"

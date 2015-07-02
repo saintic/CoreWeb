@@ -21,14 +21,19 @@ print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 print "Update Services: Input enter your number."
 print "  0:update the service version!"
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+print "\"q\":\"quit\""
+print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 
+codenum=raw_input('Please select code number:')
 service_list={1:'Nginx',2:'Httpd',3:'MySQL',4:'PHP',5:'Redis',6:'MongoDB',7:'LNMP',8:'LAMP',9:'LANMP',0:'update'}
-
-codenum=int(raw_input('Please select code number:'))
-if codenum in service_list:
-    print 'Your select:',service_list[codenum]
+if codenum == 'q':
+    exit()
 else:
-    print "Error, there is no value."
+    if codenum in service_list:
+        print 'Your select:',service_list[codenum]
+    else:
+        print "Error, there is no value."
+
 
 
 

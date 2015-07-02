@@ -29,6 +29,7 @@ service_list={1:'Nginx',2:'Httpd',3:'MySQL',4:'PHP',5:'Redis',6:'MongoDB',7:'LNM
 if codenum == 'q':
     exit()
 else:
+    codenum=int(codenum)
     if codenum in service_list:
         print 'Your select:',service_list[codenum]
     else:

@@ -1,8 +1,10 @@
 #!/usr/bin/python
+#-*- coding:utf-8 -*-
+__author__:saintic.com
 '''This script is written for Python to initialize CoreWeb;
-Author:saintic.com;
 Time:2015-06-03;
 Comments:boot coreweb!'''
+
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 print "Boot install or update, please continue!"
 print 'More content please visit the URL "https://saintic.com/".'

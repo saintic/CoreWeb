@@ -19,13 +19,16 @@ print "  6:MongoDB"
 print "  7:LNMP"
 print "  8:LAMP"
 print "  9:LANMP"
+print "  10:tomcat"
+print "  11:memcache"
+print "  12:memcached"
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
-print "Update Services: Input enter your number."
+print "Update Services: Enter your number."
 print "  0:update the service version!"
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 
 codenum=raw_input('Please select code number:')
-service_list={1:'Nginx',2:'Httpd',3:'MySQL',4:'PHP',5:'Redis',6:'MongoDB',7:'LNMP',8:'LAMP',9:'LANMP',0:'update'}
+service_list={1:'Nginx',2:'Httpd',3:'MySQL',4:'PHP',5:'Redis',6:'MongoDB',7:'LNMP',8:'LAMP',9:'LANMP',0:'update',10:'tomcat',11:'memcache',12:'memcached'}
 
 if codenum in service_list:
     print 'Your select:',service_list[codenum]

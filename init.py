@@ -1,12 +1,15 @@
 #!/usr/bin/python
 #-*- coding:utf-8 -*-
-__author__:saintic.com
+__author__ = 'saintic.com'
 '''This script is written for Python to initialize CoreWeb;
 Time:2015-06-03;
 Comments:boot coreweb!'''
 
 import sys
 import os
+os.system('clear')
+ROOT=sys.path[0]
+print ROOT
 
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 print "脚本作用：引导安装或升级。请根据提示输入数字继续。"

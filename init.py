@@ -7,7 +7,6 @@ Comments:boot coreweb!'''
 
 import sys
 import os
-import commands
 os.system('clear')
 ROOT=sys.path[0]
 
@@ -53,42 +52,33 @@ else:
     if __select in __service_list:
         print '你的选择：',__service_list[__select]
         if __select == 0:
-            commands.getstatusoutput("sh ROOT/update/init.sh")
+            os.popen("sh ROOT/update/init.sh")
         elif __select == 1:
-            commands.getstatusoutput("sh ROOT/create/nginx.sh")
+            os.popen("sh ROOT/create/nginx.sh")
         elif __select == 2:
-            commands.getstatusoutput("sh ROOT/create/apache.sh")
+            os.popen("sh ROOT/create/apache.sh")
         elif __select == 3:
-            commands.getstatusoutput("sh ROOT/create/mysql.sh")
+            os.popen("sh ROOT/create/mysql.sh")
         elif __select == 4:
-            commands.getstatusoutput("sh ROOT/create/php.sh")
+            os.popen("sh ROOT/create/php.sh")
         elif __select == 5:
-            commands.getstatusoutput("sh ROOT/create/redis.sh")
+            os.popen("sh ROOT/create/redis.sh")
         elif __select == 6:
-            commands.getstatusoutput("sh ROOT/create/mongodb.sh")
+            os.popen("sh ROOT/create/mongodb.sh")
         elif __select == 7:
-            commands.getstatusoutput("sh ROOT/create/lnmp.sh")
+            os.popen("sh ROOT/create/lnmp.sh")
         elif __select == 8:
-            commands.getstatusoutput("sh ROOT/create/lamp.sh")
+            os.popen("sh ROOT/create/lamp.sh")
         elif __select == 9:
-            commands.getstatusoutput("sh ROOT/create/lanmp.sh")
+            os.popen("sh ROOT/create/lanmp.sh")
         elif __select == 10:
-            commands.getstatusoutput("sh ROOT/create/tomcat.sh")
+            os.popen("sh ROOT/create/tomcat.sh")
         elif __select == 11:
-            commands.getstatusoutput("sh ROOT/create/memcache.sh")
+            os.popen("sh ROOT/create/memcache.sh")
         elif __select == 12:
-            commands.getstatusoutput("sh ROOT/create/memcached.sh")
+            os.popen("sh ROOT/create/memcached.sh")
         else:
             print "未支持的服务"
     else:
         print "未支持的选择"
 
-
-
-
-	
-
-
-
-
-	

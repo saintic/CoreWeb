@@ -7,9 +7,9 @@ Comments:boot coreweb!'''
 
 import sys
 import os
+import commands
 os.system('clear')
 ROOT=sys.path[0]
-print ROOT
 
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 print "脚本作用：引导安装或升级。请根据提示输入数字继续。"
@@ -50,11 +50,38 @@ elif __codenum == "Q":
     exit()
 else:
     __select=str2int(codenum)
-
-if __select in service_list:
-    print '你的选择：',service_list[codenum]
-else:
-    print "未支持的选择"
+    if __select in service_list:
+        print '你的选择：',service_list[__select]
+		if __select == 0:
+            commands.getstatusoutput("sh ROOT/update/init.sh")
+        elif __select == 1:
+            commands.getstatusoutput("sh ROOT/create/nginx.sh")
+        elif __select == 2:
+            commands.getstatusoutput("sh ROOT/create/apache.sh")
+        elif __select == 3:
+            commands.getstatusoutput("sh ROOT/create/mysql.sh")
+        elif __select == 4:
+            commands.getstatusoutput("sh ROOT/create/php.sh")
+        elif __select == 5:
+            commands.getstatusoutput("sh ROOT/create/redis.sh")
+        elif __select == 6:
+            commands.getstatusoutput("sh ROOT/create/mongodb.sh")
+        elif __select == 7:
+            commands.getstatusoutput("sh ROOT/create/lnmp.sh")
+        elif __select == 8:
+            commands.getstatusoutput("sh ROOT/create/lamp.sh")
+        elif __select == 9:
+            commands.getstatusoutput("sh ROOT/create/lanmp.sh")
+        elif __select == 10:
+            commands.getstatusoutput("sh ROOT/create/tomcat.sh")
+        elif __select == 11:
+            commands.getstatusoutput("sh ROOT/create/memcache.sh")
+        elif __select == 12:
+            commands.getstatusoutput("sh ROOT/create/memcached.sh")
+        else:
+            print "未支持的服务"
+    else:
+        print "未支持的选择"
 
 
 

@@ -9,6 +9,7 @@ import sys
 import os
 os.system('clear')
 ROOT=sys.path[0]
+os.environ['ROOT']=str(ROOT)
 
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 print "脚本作用：引导安装或升级。请根据提示输入数字继续。"
@@ -37,6 +38,8 @@ print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 __codenum=raw_input('请选择数字代码安装或升级:')
 
 def str2int(s):
+    if not isinstance(s,(int,str)):
+        raise TypeError('bad operand type')
     def char2num(s):
         return {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}[s]
     return reduce(lambda x,y: x*10+y, map(char2num, s))
@@ -52,31 +55,31 @@ else:
     if __select in __service_list:
         print '你的选择：',__service_list[__select]
         if __select == 0:
-            os.popen("sh ROOT/update/init.sh")
+            os.system("sh $ROOT/update/init.sh")
         elif __select == 1:
-            os.popen("sh ROOT/create/nginx.sh")
+            os.system("sh $ROOT/create/nginx.sh")
         elif __select == 2:
-            os.popen("sh ROOT/create/apache.sh")
+            os.system("sh $ROOT/create/apache.sh")
         elif __select == 3:
-            os.popen("sh ROOT/create/mysql.sh")
+            os.system("sh $ROOT/create/mysql.sh")
         elif __select == 4:
-            os.popen("sh ROOT/create/php.sh")
+            os.system("sh $ROOT/create/php.sh")
         elif __select == 5:
-            os.popen("sh ROOT/create/redis.sh")
+            os.system("sh $ROOT/create/redis.sh")
         elif __select == 6:
-            os.popen("sh ROOT/create/mongodb.sh")
+            os.system("sh $ROOT/create/mongodb.sh")
         elif __select == 7:
-            os.popen("sh ROOT/create/lnmp.sh")
+            os.system("sh $ROOT/create/lnmp.sh")
         elif __select == 8:
-            os.popen("sh ROOT/create/lamp.sh")
+            os.system("sh $ROOT/create/lamp.sh")
         elif __select == 9:
-            os.popen("sh ROOT/create/lanmp.sh")
+            os.system("sh $ROOT/create/lanmp.sh")
         elif __select == 10:
-            os.popen("sh ROOT/create/tomcat.sh")
+            os.system("sh $ROOT/create/tomcat.sh")
         elif __select == 11:
-            os.popen("sh ROOT/create/memcache.sh")
+            os.system("sh $ROOT/create/memcache.sh")
         elif __select == 12:
-            os.popen("sh ROOT/create/memcached.sh")
+            os.system("sh $ROOT/create/memcached.sh")
         else:
             print "未支持的服务"
     else:

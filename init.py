@@ -52,7 +52,7 @@ else:
     __select=str2int(codenum)
     if __select in service_list:
         print '你的选择：',service_list[__select]
-		if __select == 0:
+        if __select == 0:
             commands.getstatusoutput("sh ROOT/update/init.sh")
         elif __select == 1:
             commands.getstatusoutput("sh ROOT/create/nginx.sh")

@@ -49,9 +49,9 @@ if __codenum == "q":
 elif __codenum == "Q":
     exit()
 else:
-    __select=str2int(codenum)
-    if __select in service_list:
-        print '你的选择：',service_list[__select]
+    __select=str2int(__codenum)
+    if __select in __service_list:
+        print '你的选择：',__service_list[__select]
         if __select == 0:
             commands.getstatusoutput("sh ROOT/update/init.sh")
         elif __select == 1:

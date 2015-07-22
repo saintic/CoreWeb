@@ -55,7 +55,7 @@ else:
     if __select in __service_list:
         print '你的选择：',__service_list[__select]
         if __select == 0:
-            os.system("sh $ROOT/update/init.sh")
+            os.system("sh $ROOT/update/boot.sh")
         elif __select == 1:
             os.system("sh $ROOT/create/nginx.sh")
         elif __select == 2:

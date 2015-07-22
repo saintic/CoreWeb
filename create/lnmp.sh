@@ -1,22 +1,15 @@
 #!/bin/bash
-if [ -z $1 ] || [ $# -gt 2 ] || [ $# -eq 0 ] ;then
-cat<<EOF
-$0 args:
-  第一个参数：httpd或nginx
-  第二个参数：如果第一个参数是httpd，那么没有第二个参数；如果第一个参数是nginx，则第二个参数为php-fpm的用户，也就是nginx运行的用户。
-EOF
-exit 1
-fi
-
-web=$1
-user=$2
-
+#author:saintic.com
+#lnmp
+NGINX_VERSION=1.8.0
+MYSQL_VERSION=5.5.20
 PHP_VERSION=5.6.2
 PACKAGE_PATH="/data/software"
 APP_PATH="/data/app"
 lock="/var/lock/subsys/paas.sdi.lock"
 CPU=$(grep "processor" /proc/cpuinfo | wc -l)
 MEM=$(free -m | awk '/Mem:/{print $2}')
+
 clear
 cat<<EOF
 ####################################################
@@ -52,9 +45,49 @@ function ERROR() {
   echo "Error:Please check this script and input/output!"
 }
 
+
+CREATE_NGINX() {
+id -u www &> /dev/null || useradd -M -s /sbin/nologin www
+if [ -f $PACKAGE_PATH/nginx-${NGINX_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/nginx-$NGINX_VERSION ] ; then
+  rm -rf $PACKAGE_PATH/nginx-${NGINX_VERSION}*
+fi
+yum -y install tar bzip2 gzip pcre pcre-devel gcc gcc-c++ zlib-devel wget openssl-devel ; cd $PACKAGE_PATH ; wget -c http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar zxf nginx-${NGINX_VERSION}.tar.gz && cd nginx-$NGINX_VERSION
+./configure --prefix=${APP_PATH}/nginx --user=www --group=www --with-poll_module  --with-http_ssl_module --with-http_gzip_static_module --with-http_stub_status_module --with-http_realip_module --with-pcre && make && make install
+${APP_PATH}/nginx/sbin/nginx -t
+if [ $? -eq 0 ]; then
+  echo -n "Start:/etc/init.d/nginx start" ;
+  ${APP_PATH}/nginx/sbin/nginx
+  echo "${APP_PATH}/nginx/sbin/nginx" >> /etc/rc.local
+else
+  echo "Please check nginx.conf"
+fi
+}
+
+CREATE_MYSQL() {
+yum -y install tar gzip bzip2 gcc gcc-c++ cmake ncurses-devel mysql wget
+id -u mysql &> /dev/null || useradd -M -s /sbin/nologin mysql
+if [ -f $PACKAGE_PATH/mysql-${MYSQL_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/mysql-${MYSQL_VERSION} ] ; then
+  rm -rf $PACKAGE_PATH/mysql-${MYSQL_VERSION}*
+fi
+cd $PACKAGE_PATH ; wget -c http://down1.chinaunix.net/distfiles/mysql-${MYSQL_VERSION}.tar.gz || \
+wget -c http://software.saintic.com/core/web/mysql-${MYSQL_VERSION}.tar.gz ; tar zxf mysql-${MYSQL_VERSION}.tar.gz
+cd mysql-$MYSQL_VERSION
+cmake -DCMAKE_INSTALL_PREFIX=${APP_PATH}/mysql -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DWITH_EXTRA_CHARSETS=all  -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_MEMORY_STORAGE_ENGINE=1 -DWITH_READLINE=1 -DENABLED_LOCAL_INFILE=1 -DMYSQL_DATADIR=${APP_PATH}/mysql/data/ -DMYSQL_USER=mysql -DMYSQL_UNIX_ADDR=/tmp/mysqld.sock -DMYSQL_TCP_PORT=3306 && make && make install
+cp -f support-files/my-medium.cnf /etc/my.cnf 
+chown -R mysql:mysql ${APP_PATH}/mysql
+${APP_PATH}/mysql/scripts/mysql_install_db --basedir=${APP_PATH}/mysql --datadir=${APP_PATH}/mysql/data --user=mysql
+cp ${APP_PATH}/mysql/support-files/mysql.server /etc/init.d/mysqld
+chkconfig --add mysqld ; chkconfig mysqld on
+if [ $? -eq 0 ]; then
+  echo -n "Start:/etc/init.d/mysqld start" ;
+  /etc/init.d/mysqld start
+else
+  echo "Please check my.cnf"
+fi
+}
+
 CREATE_PHP() {
-HEAD || ERROR
-[ -f $lock ] && echo "Please run \"rm -f $lock\", then run again." && exit 1 || touch $lock
+user=www
 if [ -f $PACKAGE_PATH/php-${PHP_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/php-${PHP_VERSION} ] ; then
   rm -rf $PACKAGE_PATH/php-${PHP_VERSION}*
 fi
@@ -82,19 +115,6 @@ ln -s /usr/local/lib/libmhash* /usr/lib64/
 cd ${PACKAGE_PATH}/mcrypt-2.6.4
 ./configure && make && make install
 cd ${PACKAGE_PATH}/php-$PHP_VERSION
-
-if [ "$web" == "httpd" ]; then
-./configure --prefix=${APP_PATH}/php --with-config-file-path=${APP_PATH}/php/etc/ --with-apxs2=${APP_PATH}/apache/bin/apxs --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-iconv --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir --enable-xml --enable-inline-optimization --with-curl --enable-mbstring --with-mhash --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl --enable-sockets --with-pdo-mysql --enable-pdo --enable-zip --enable-soap --enable-ftp  --enable-shmop --with-bz2 --enable-exif --with-gettext && make
-make test <<EOF
-n
-EOF
-make install
-local LINE1=$(sed -i '/DirectoryIndex/ d' ${APP_PATH}/apache/conf/httpd.conf | grep -n -s -A 1 "IfModule dir_module" ${APP_PATH}/apache/conf/httpd.conf | grep ":" | awk -F : '{print $1}')
-sed -i "${LINE1}a DirectoryIndex index.html index.php" ${APP_PATH}/apache/conf/httpd.conf
-local LINE2=$(grep -n "<IfModule mime_module>" ${APP_PATH}/apache/conf/httpd.conf | grep ":" | awk -F : '{print $1}')
-sed -i "${LINE2}a AddType application/x-httpd-php .php" ${APP_PATH}/apache/conf/httpd.conf
-sed -i 's/DirectoryIndex/DirectoryIndex index.php index.htm/g' ${APP_PATH}/apache/conf/httpd.conf
-elif [ "$web" == "nginx" ]; then
 ./configure --prefix=${APP_PATH}/php --with-config-file-path=${APP_PATH}/php/etc/ --with-mysql=mysqlnd --enable-fpm --with-mysqli=mysqlnd --with-iconv --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir --enable-xml --enable-inline-optimization --with-curl --enable-mbstring --with-mhash --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl --enable-sockets --with-pdo-mysql --enable-pdo --enable-zip --enable-soap --enable-ftp --with-bz2 --enable-exif --with-gettext
 make
 make test <<EOF
@@ -110,8 +130,8 @@ sed -i "s/user = nobody/user = ${user}/g" php-fpm.conf
 sed -i "s/group = nobody/group = ${user}/g" php-fpm.conf
 sed -i 's#;pid = run\/php-fpm.pid#pid = run/php-fpm.pid#' php-fpm.conf
 local init_fpm="${PACKAGE_PATH}/php-${PHP_VERSION}/sapi/fpm/init.d.php-fpm"
-[ -e $init_fpm ] && cp $init_fpm /etc/init.d/php-fpm && chmod +x /etc/init.d/php-fpm && chkconfig --add php-fpm
-fi
+[ -e $init_fpm ] && cp $init_fpm /etc/init.d/php-fpm && chmod +x /etc/init.d/php-fpm && chkconfig --add php-fpm ; chkconfig php-fpm on
+
 cp -f ${PACKAGE_PATH}/php-${PHP_VERSION}/php.ini-production ${APP_PATH}/php/etc/php.ini
 sed -i 's/post_max_size = 8M/post_max_size = 10M/g' ${APP_PATH}/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 10M/g' ${APP_PATH}/php/etc/php.ini
@@ -122,62 +142,19 @@ sed -i 's/; cgi.fix_pathinfo=0/cgi.fix_pathinfo=0/g' ${APP_PATH}/php/etc/php.ini
 sed -i 's/max_execution_time = 30/max_execution_time = 300/g' ${APP_PATH}/php/etc/php.ini
 }
 
-CREATE_PHP_API() {
-if [ "$1" == "redis" ]; then    #php-redis client
-local redis_api_version=2.2.7
-cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/redis-${redis_api_version}.tgz
-tar zxf redis-${redis_api_version}.tgz ; cd redis-${redis_api_version}
-${APP_PATH}/php/bin/phpize
-./configure --enable-redis --with-php-config=${APP_PATH}/php/bin/php-config && make && make test && make install > /tmp/redis-api.txt
-local EXT1=$(tail -1 /tmp/redis-api.txt | awk -F: '{print $2}' | awk '{print $1}')
-echo "extension=${EXT1}redis.so" >> ${APP_PATH}/php/etc/php.ini
 
-elif [ "$1" = "mongodb" ]; then    #php-mongo client
-local mongo_api_version=1.6.8
-cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/mongo-${mongo_api_version}.tgz
-tar zxf mongo-${mongo_api_version}.tgz ; cd mongo-${mongo_api_version}
-${APP_PATH}/php/bin/phpize
-./configure --enable-mongo --with-php-config=${APP_PATH}/php/bin/php-config && make && make test && make install > /tmp/mongo-api
-local EXT2=$(tail -1 /tmp/mongo-api | awk -F: '{print $2}' | awk '{print $1}')
-echo "extension=${EXT2}mongo.so" >> ${APP_PATH}/php/etc/php.ini
-
-elif [ "$1" = "memcache" ]; then    #php-memcache client
-local memcache_api_version=2.2.7
-cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/memcache-${memcache_api_version}.tgz
-tar zxf memcache-${memcache_api_version}.tgz ; cd memcache-$memcache_api_version
-${APP_PATH}/php/bin/phpize
-./configure --enable-memcache --with-php-config=${APP_PATH}/php/bin/php-config --with-zlib-dir
-make
-make test <<EOF
-n
-EOF
-make install > /tmp/memcache-api
-local EXT3=$(tail -1 /tmp/memcache-api | awk -F: '{print $2}' | awk '{print $1}')
-echo "extension=${EXT3}memcache.so" >> ${APP_PATH}/php/etc/php.ini
-
-elif [ "$1" = "memcached" ]; then    #php-memcached client
-local memcached_api_version=2.2.0
-cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/memcached-${memcached_api_version}.tgz
-tar zxf memcached-${memcached_api_version}.tgz ; cd memcached-$memcached_api_version
-${APP_PATH}/php/bin/phpize
-./configure --enable-memcached --with-libmemcached-dir=/usr/local/libmemcached/ --with-php-config=${APP_PATH}/php/bin/php-config  --enable-memcached-json --disable-memcached-sasl
-make
-make test <<EOF
-n
-EOF
-make install > /tmp/memcached-api
-local EXT4=$(tail -1 /tmp/memcached-api | awk -F: '{print $2}' | awk '{print $1}')
-echo "extension=${EXT4}memcached.so" >> ${APP_PATH}/php/etc/php.ini
-fi
+LNMP() {
+[ -f $lock ] && echo "Please run \"rm -f $lock\", then run again." && exit 1 || touch $lock
+CREATE_NGINX
+CREATE_MYSQL
+CREATE_PHP
 }
 
+HEAD && LNMP || ERROR
 
-if [ "$web" == "httpd" ]; then
-  :
-elif [ "$web" == "nginx" ]; then
-  [ -z $user ] && exit 1
-  id -u $user &> /dev/null || useradd -M -s /sbin/nologin $user
+if [ `ps aux | grep -v grep | grep nginx |wc -l` -ge 1 ] && [ `ps aux | grep -v grep | grep mysqld |wc -l` ] && [ `ps aux | grep -v grep | grep php-fpm |wc -l` ]; then
+  rm -f $lock
+else
+  echo "LNMP haven't finished."
 fi
 
-CREATE_PHP
-[ -d ${APP_PATH}/php ] && rm -f $lock || echo "不存在PHP目录，安装失败，脚本退出" && exit 1

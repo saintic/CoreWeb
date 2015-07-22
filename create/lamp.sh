@@ -1,16 +1,10 @@
 #!/bin/bash
-if [ -z $1 ] || [ $# -gt 2 ] || [ $# -eq 0 ] ;then
-cat<<EOF
-$0 args:
-  第一个参数：httpd或nginx
-  第二个参数：如果第一个参数是httpd，那么没有第二个参数；如果第一个参数是nginx，则第二个参数为php-fpm的用户，也就是nginx运行的用户。
-EOF
-exit 1
-fi
+#lamp
+#author:saintic.com
+#mysql innodb:no
 
-web=$1
-user=$2
-
+HTTPD_VERSION=2.2.4
+MYSQL_VERSION=5.5.20
 PHP_VERSION=5.6.2
 PACKAGE_PATH="/data/software"
 APP_PATH="/data/app"
@@ -52,9 +46,66 @@ function ERROR() {
   echo "Error:Please check this script and input/output!"
 }
 
+CREATE_HTTP() {
+yum -y install tar bzip2 gzip libtool pcre-devel gcc-c++ gcc cmake make expat-devel zlib-devel neon-devel openssl-devel cyrus-sasl-devel wget
+if [ -f $PACKAGE_PATH/httpd-${HTTPD_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/httpd-$HTTPD_VERSION ] ; then
+  rm -rf $PACKAGE_PATH/httpd-${HTTPD_VERSION}*
+fi
+cd $PACKAGE_PATH
+wget -c http://software.saintic.com/core/web/Apache.zip
+wget -c http://archive.apache.org/dist/httpd/httpd-${HTTPD_VERSION}.tar.gz
+#1.Apr,Apr-util
+tar zxf apr-1.2.12.tar.gz
+tar zxf apr-util-1.2.12.tar.gz
+cd ${PACKAGE_PATH}/apr-1.2.12
+./configure --enable-shared && make && make install
+cd $PACKAGE_PATH/apr-util-1.2.12
+./configure --enable-shared --with-expat=builtin --with-apr=/usr/local/apr/ && make && make install
+
+cd ${PACKAGE_PATH} ; tar zxf httpd-${HTTPD_VERSION}.tar.gz ; cd httpd-${HTTPD_VERSION}
+./configure --prefix=${APP_PATH}/apache--sysconfdir=/etc/httpd --enable-mods-shared=most --enable-modules=most --enable-so --enable-rewrite=shared --enable-ssl=shared --with-ssl --enable-cgi --enable-dav --with-included-apr --with-apr=/usr/local/apr/bin/apr-1-config --with-apr-util=/usr/local/apr/bin/apu-1-config --enable-static-support --enable-charset-lite
+make && make install
+cp ${APP_PATH}/apache/bin/apachectl /etc/init.d/httpd
+cat >> /etc/init.d/httpd <<EOF
+#chkconfig:35 13 52
+#description:Apache HTTP Server
+EOF
+chmod +x /etc/init.d/httpd
+chkconfig --add httpd && chkconfig httpd on
+sed -i "s/#ServerName www.example.com:80/ServerName www.saintic.com/g" ${APP_PATH}/apache/conf/httpd.conf
+sed -i "s/ServerAdmin you@example.com/ServerAdmin admin@saintic.com/" ${APP_PATH}/apache/conf/httpd.conf
+${APP_PATH}/apache/bin/apachectl -t
+if [ $? -eq  ]; then
+  /etc/init.d/httpd start
+else
+  echo "Please check httpd.conf"
+fi
+}
+
+CREATE_MYSQL() {
+yum -y install tar gzip bzip2 gcc gcc-c++ cmake ncurses-devel mysql wget
+id -u mysql &> /dev/null || useradd -M -s /sbin/nologin mysql
+if [ -f $PACKAGE_PATH/mysql-${MYSQL_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/mysql-${MYSQL_VERSION} ] ; then
+  rm -rf $PACKAGE_PATH/mysql-${MYSQL_VERSION}*
+fi
+cd $PACKAGE_PATH ; wget -c http://down1.chinaunix.net/distfiles/mysql-${MYSQL_VERSION}.tar.gz || \
+wget -c http://software.saintic.com/core/web/mysql-${MYSQL_VERSION}.tar.gz ; tar zxf mysql-${MYSQL_VERSION}.tar.gz
+cd mysql-$MYSQL_VERSION
+cmake -DCMAKE_INSTALL_PREFIX=${APP_PATH}/mysql -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DWITH_EXTRA_CHARSETS=all  -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=0 -DWITH_MEMORY_STORAGE_ENGINE=1 -DWITH_READLINE=1 -DENABLED_LOCAL_INFILE=1 -DMYSQL_DATADIR=${APP_PATH}/mysql/data/ -DMYSQL_USER=mysql -DMYSQL_UNIX_ADDR=/tmp/mysqld.sock -DMYSQL_TCP_PORT=3306 && make && make install
+cp -f support-files/my-medium.cnf /etc/my.cnf 
+chown -R mysql:mysql ${APP_PATH}/mysql
+${APP_PATH}/mysql/scripts/mysql_install_db --basedir=${APP_PATH}/mysql --datadir=${APP_PATH}/mysql/data --user=mysql
+cp ${APP_PATH}/mysql/support-files/mysql.server /etc/init.d/mysqld
+chkconfig --add mysqld ; chkconfig mysqld on
+if [ $? -eq 0 ]; then
+  echo -n "Start:/etc/init.d/mysqld start" ;
+  /etc/init.d/mysqld start
+else
+  echo "Please check my.cnf"
+fi
+}
+
 CREATE_PHP() {
-HEAD || ERROR
-[ -f $lock ] && echo "Please run \"rm -f $lock\", then run again." && exit 1 || touch $lock
 if [ -f $PACKAGE_PATH/php-${PHP_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/php-${PHP_VERSION} ] ; then
   rm -rf $PACKAGE_PATH/php-${PHP_VERSION}*
 fi
@@ -82,8 +133,6 @@ ln -s /usr/local/lib/libmhash* /usr/lib64/
 cd ${PACKAGE_PATH}/mcrypt-2.6.4
 ./configure && make && make install
 cd ${PACKAGE_PATH}/php-$PHP_VERSION
-
-if [ "$web" == "httpd" ]; then
 ./configure --prefix=${APP_PATH}/php --with-config-file-path=${APP_PATH}/php/etc/ --with-apxs2=${APP_PATH}/apache/bin/apxs --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-iconv --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir --enable-xml --enable-inline-optimization --with-curl --enable-mbstring --with-mhash --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl --enable-sockets --with-pdo-mysql --enable-pdo --enable-zip --enable-soap --enable-ftp  --enable-shmop --with-bz2 --enable-exif --with-gettext && make
 make test <<EOF
 n
@@ -94,24 +143,6 @@ sed -i "${LINE1}a DirectoryIndex index.html index.php" ${APP_PATH}/apache/conf/h
 local LINE2=$(grep -n "<IfModule mime_module>" ${APP_PATH}/apache/conf/httpd.conf | grep ":" | awk -F : '{print $1}')
 sed -i "${LINE2}a AddType application/x-httpd-php .php" ${APP_PATH}/apache/conf/httpd.conf
 sed -i 's/DirectoryIndex/DirectoryIndex index.php index.htm/g' ${APP_PATH}/apache/conf/httpd.conf
-elif [ "$web" == "nginx" ]; then
-./configure --prefix=${APP_PATH}/php --with-config-file-path=${APP_PATH}/php/etc/ --with-mysql=mysqlnd --enable-fpm --with-mysqli=mysqlnd --with-iconv --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib --with-libxml-dir --enable-xml --enable-inline-optimization --with-curl --enable-mbstring --with-mhash --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl --enable-sockets --with-pdo-mysql --enable-pdo --enable-zip --enable-soap --enable-ftp --with-bz2 --enable-exif --with-gettext
-make
-make test <<EOF
-n
-EOF
-make install
-cd ${APP_PATH}/php/etc/ ; cp php-fpm.conf.default php-fpm.conf
-sed -i "s@^pm.max_children.*@pm.max_children = $(($MEM/2/20))@" php-fpm.conf
-sed -i "s@^pm.start_servers.*@pm.start_servers = $(($MEM/2/30))@" php-fpm.conf
-sed -i "s@^pm.min_spare_servers.*@pm.min_spare_servers = $(($MEM/2/40))@" php-fpm.conf
-sed -i "s@^pm.max_spare_servers.*@pm.max_spare_servers = $(($MEM/2/20))@" php-fpm.conf
-sed -i "s/user = nobody/user = ${user}/g" php-fpm.conf
-sed -i "s/group = nobody/group = ${user}/g" php-fpm.conf
-sed -i 's#;pid = run\/php-fpm.pid#pid = run/php-fpm.pid#' php-fpm.conf
-local init_fpm="${PACKAGE_PATH}/php-${PHP_VERSION}/sapi/fpm/init.d.php-fpm"
-[ -e $init_fpm ] && cp $init_fpm /etc/init.d/php-fpm && chmod +x /etc/init.d/php-fpm && chkconfig --add php-fpm
-fi
 cp -f ${PACKAGE_PATH}/php-${PHP_VERSION}/php.ini-production ${APP_PATH}/php/etc/php.ini
 sed -i 's/post_max_size = 8M/post_max_size = 10M/g' ${APP_PATH}/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 10M/g' ${APP_PATH}/php/etc/php.ini
@@ -122,62 +153,18 @@ sed -i 's/; cgi.fix_pathinfo=0/cgi.fix_pathinfo=0/g' ${APP_PATH}/php/etc/php.ini
 sed -i 's/max_execution_time = 30/max_execution_time = 300/g' ${APP_PATH}/php/etc/php.ini
 }
 
-CREATE_PHP_API() {
-if [ "$1" == "redis" ]; then    #php-redis client
-local redis_api_version=2.2.7
-cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/redis-${redis_api_version}.tgz
-tar zxf redis-${redis_api_version}.tgz ; cd redis-${redis_api_version}
-${APP_PATH}/php/bin/phpize
-./configure --enable-redis --with-php-config=${APP_PATH}/php/bin/php-config && make && make test && make install > /tmp/redis-api.txt
-local EXT1=$(tail -1 /tmp/redis-api.txt | awk -F: '{print $2}' | awk '{print $1}')
-echo "extension=${EXT1}redis.so" >> ${APP_PATH}/php/etc/php.ini
-
-elif [ "$1" = "mongodb" ]; then    #php-mongo client
-local mongo_api_version=1.6.8
-cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/mongo-${mongo_api_version}.tgz
-tar zxf mongo-${mongo_api_version}.tgz ; cd mongo-${mongo_api_version}
-${APP_PATH}/php/bin/phpize
-./configure --enable-mongo --with-php-config=${APP_PATH}/php/bin/php-config && make && make test && make install > /tmp/mongo-api
-local EXT2=$(tail -1 /tmp/mongo-api | awk -F: '{print $2}' | awk '{print $1}')
-echo "extension=${EXT2}mongo.so" >> ${APP_PATH}/php/etc/php.ini
-
-elif [ "$1" = "memcache" ]; then    #php-memcache client
-local memcache_api_version=2.2.7
-cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/memcache-${memcache_api_version}.tgz
-tar zxf memcache-${memcache_api_version}.tgz ; cd memcache-$memcache_api_version
-${APP_PATH}/php/bin/phpize
-./configure --enable-memcache --with-php-config=${APP_PATH}/php/bin/php-config --with-zlib-dir
-make
-make test <<EOF
-n
-EOF
-make install > /tmp/memcache-api
-local EXT3=$(tail -1 /tmp/memcache-api | awk -F: '{print $2}' | awk '{print $1}')
-echo "extension=${EXT3}memcache.so" >> ${APP_PATH}/php/etc/php.ini
-
-elif [ "$1" = "memcached" ]; then    #php-memcached client
-local memcached_api_version=2.2.0
-cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/memcached-${memcached_api_version}.tgz
-tar zxf memcached-${memcached_api_version}.tgz ; cd memcached-$memcached_api_version
-${APP_PATH}/php/bin/phpize
-./configure --enable-memcached --with-libmemcached-dir=/usr/local/libmemcached/ --with-php-config=${APP_PATH}/php/bin/php-config  --enable-memcached-json --disable-memcached-sasl
-make
-make test <<EOF
-n
-EOF
-make install > /tmp/memcached-api
-local EXT4=$(tail -1 /tmp/memcached-api | awk -F: '{print $2}' | awk '{print $1}')
-echo "extension=${EXT4}memcached.so" >> ${APP_PATH}/php/etc/php.ini
-fi
+LAMP() {
+[ -f $lock ] && echo "Please run \"rm -f $lock\", then run again." && exit 1 || touch $lock
+CREATE_HTTP
+CREATE_MYSQL
+CREATE_PHP
 }
 
+HEAD && LAMP || ERROR
 
-if [ "$web" == "httpd" ]; then
-  :
-elif [ "$web" == "nginx" ]; then
-  [ -z $user ] && exit 1
-  id -u $user &> /dev/null || useradd -M -s /sbin/nologin $user
+if [ `ps aux | grep -v grep | grep httpd |wc -l` -ge 1 ] && [ `ps aux | grep -v grep | grep mysqld |wc -l` ]; then
+  rm -f $lock
+else
+  echo "LAMP haven't finished."
 fi
 
-CREATE_PHP
-[ -d ${APP_PATH}/php ] && rm -f $lock || echo "不存在PHP目录，安装失败，脚本退出" && exit 1

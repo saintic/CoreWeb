@@ -1,15 +1,10 @@
 #!/bin/bash
-if [ -z $1 ] || [ $# -gt 2 ] || [ $# -eq 0 ] ;then
-cat<<EOF
-$0 args:
-  第一个参数：httpd或nginx
-  第二个参数：如果第一个参数是httpd，那么没有第二个参数；如果第一个参数是nginx，则第二个参数为php-fpm的用户，也就是nginx运行的用户。
-EOF
-exit 1
+read -p "请输入网站类型，支持httpd和nginx:" web
+if [ "$web" == "httpd" ]; then
+    echo "你选择的是httpd。"
+else
+    read -p "你选择的nginx，需要输入php-fpm的用户，即nginx运行的用户：" user
 fi
-
-web=$1
-user=$2
 
 PHP_VERSION=5.6.2
 PACKAGE_PATH="/data/software"

@@ -101,6 +101,7 @@ else
 fi
 }
 
+
 CREATE_MYSQL() {
 yum -y install tar gzip bzip2 gcc gcc-c++ cmake ncurses-devel mysql wget
 id -u mysql &> /dev/null || useradd -M -s /sbin/nologin mysql
@@ -110,18 +111,13 @@ fi
 cd $PACKAGE_PATH ; wget -c http://down1.chinaunix.net/distfiles/mysql-${MYSQL_VERSION}.tar.gz || \
 wget -c http://software.saintic.com/core/web/mysql-${MYSQL_VERSION}.tar.gz ; tar zxf mysql-${MYSQL_VERSION}.tar.gz
 cd mysql-$MYSQL_VERSION
-cmake -DCMAKE_INSTALL_PREFIX=${APP_PATH}/mysql -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DWITH_EXTRA_CHARSETS=all  -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=0 -DWITH_MEMORY_STORAGE_ENGINE=1 -DWITH_READLINE=1 -DENABLED_LOCAL_INFILE=1 -DMYSQL_DATADIR=${APP_PATH}/mysql/data/ -DMYSQL_USER=mysql -DMYSQL_UNIX_ADDR=/tmp/mysqld.sock -DMYSQL_TCP_PORT=3306 && make && make install
+cmake -DCMAKE_INSTALL_PREFIX=${APP_PATH}/mysql -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DWITH_EXTRA_CHARSETS=all  -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_MEMORY_STORAGE_ENGINE=1 -DWITH_READLINE=1 -DENABLED_LOCAL_INFILE=1 -DMYSQL_DATADIR=${APP_PATH}/mysql/data/ -DMYSQL_USER=mysql -DMYSQL_UNIX_ADDR=/tmp/mysqld.sock -DMYSQL_TCP_PORT=3306 && make && make install
 cp -f support-files/my-medium.cnf /etc/my.cnf 
 chown -R mysql:mysql ${APP_PATH}/mysql
 ${APP_PATH}/mysql/scripts/mysql_install_db --basedir=${APP_PATH}/mysql --datadir=${APP_PATH}/mysql/data --user=mysql
 cp ${APP_PATH}/mysql/support-files/mysql.server /etc/init.d/mysqld
 chkconfig --add mysqld ; chkconfig mysqld on
-if [ $? -eq 0 ]; then
-  echo -n "Start:/etc/init.d/mysqld start" ;
-  /etc/init.d/mysqld start
-else
-  echo "Please check my.cnf"
-fi
+/etc/init.d/mysqld start
 }
 
 fpm() {

@@ -40,7 +40,6 @@ function ERROR() {
 }
 
 CREATE_MYSQL() {
-
 yum -y install tar gzip bzip2 gcc gcc-c++ cmake ncurses-devel mysql wget
 id -u mysql &> /dev/null || useradd -M -s /sbin/nologin mysql
 if [ -f $PACKAGE_PATH/mysql-${MYSQL_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/mysql-${MYSQL_VERSION} ] ; then

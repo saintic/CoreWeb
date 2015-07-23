@@ -78,12 +78,7 @@ chown -R mysql:mysql ${APP_PATH}/mysql
 ${APP_PATH}/mysql/scripts/mysql_install_db --basedir=${APP_PATH}/mysql --datadir=${APP_PATH}/mysql/data --user=mysql
 cp ${APP_PATH}/mysql/support-files/mysql.server /etc/init.d/mysqld
 chkconfig --add mysqld ; chkconfig mysqld on
-if [ $? -eq 0 ]; then
-  echo -n "Start:/etc/init.d/mysqld start" ;
-  /etc/init.d/mysqld start
-else
-  echo "Please check my.cnf"
-fi
+/etc/init.d/mysqld start
 }
 
 CREATE_PHP() {

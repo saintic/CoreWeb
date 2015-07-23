@@ -42,7 +42,6 @@ function ERROR() {
 
 CREATE_NGINX() {
 HEAD || ERROR
-[ -f $lock ] && echo "Please run \"rm -f $lock\", then run again." && exit 1 || touch $lock
 id -u www &> /dev/null || useradd -M -s /sbin/nologin www
 if [ -f $PACKAGE_PATH/nginx-${NGINX_VERSION}.tar.gz ] || [ -d $PACKAGE_PATH/nginx-$NGINX_VERSION ] ; then
   rm -rf $PACKAGE_PATH/nginx-${NGINX_VERSION}*

@@ -1,5 +1,5 @@
 #!/bin/bash
-HTTPD_VERSION=2.2.4
+HTTPD_VERSION=2.2.29
 PACKAGE_PATH="/data/software"
 APP_PATH="/data/app"
 lock="/var/lock/subsys/paas.sdi.lock"

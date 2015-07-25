@@ -56,7 +56,7 @@ cd $PACKAGE_PATH/apr-util-1.2.12
 ./configure --enable-shared --with-expat=builtin --with-apr=/usr/local/apr/ && make && make install
 
 cd ${PACKAGE_PATH} ; tar zxf httpd-${HTTPD_VERSION}.tar.gz ; cd httpd-${HTTPD_VERSION}
-./configure --prefix=${APP_PATH}/apache--sysconfdir=/etc/httpd --enable-mods-shared=most --enable-modules=most --enable-so --enable-rewrite=shared --enable-ssl=shared --with-ssl --enable-cgi --enable-dav --with-included-apr --with-apr=/usr/local/apr/bin/apr-1-config --with-apr-util=/usr/local/apr/bin/apu-1-config --enable-static-support --enable-charset-lite
+./configure --prefix=${APP_PATH}/apache --sysconfdir=/etc/httpd --enable-mods-shared=most --enable-modules=most --enable-so --enable-rewrite=shared --enable-ssl=shared --with-ssl --enable-cgi --enable-dav --with-included-apr --with-apr=/usr/local/apr/bin/apr-1-config --with-apr-util=/usr/local/apr/bin/apu-1-config --enable-static-support --enable-charset-lite
 make && make install
 cp ${APP_PATH}/apache/bin/apachectl /etc/init.d/httpd
 cat >> /etc/init.d/httpd <<EOF

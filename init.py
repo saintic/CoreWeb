@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #-*- coding:utf-8 -*-
 __author__ = 'saintic.com'
-'''This script is written for Python to initialize CoreWeb;
-Time:2015-06-03;
-Comments:boot coreweb!'''
+__doc__ = 'This script is written for Python to initialize CoreWeb'
+__version = '3.0.0'
+__data__ = '2015-06-03'
 
 import sys
 import os

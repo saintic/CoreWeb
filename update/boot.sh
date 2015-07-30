@@ -18,15 +18,15 @@ echo -e  "\033[32m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 read -p  "请输入对应代码号升级服务：" CODE_NUM
 case $CODE_NUM in
     q|Q)
-        echo "Quit Script."
+        echo -e "\033[32mQuit Script.\033[0m"
         exit
 		;;
     1)
-	    echo "Update Nginx"
+	    echo -e "\033[32mUpdate Nginx\033[0m"
 	    sh ${ROOT}/update/update_nginx.sh
 	    ;;
 	*)
-	    echo "不匹配代码号,脚本不执行"
+	    echo -e "\033[32m不匹配代码号,脚本不执行\033[0m"
 	    exit 1
 	    ;;
 esac

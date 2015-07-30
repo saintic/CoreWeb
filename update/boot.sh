@@ -18,12 +18,13 @@ case $CODE_NUM in
     q|Q)
         echo "Quit Script."
         exit
+		;;
     1)
-		echo "Update Nginx"
-		sh ${ROOT}/update/update_nginx.sh
-		;;
+	    echo "Update Nginx"
+	    sh ${ROOT}/update/update_nginx.sh
+	    ;;
 	*)
-		echo "不匹配代码号,脚本不执行"
-		exit 1
-		;;
+	    echo "不匹配代码号,脚本不执行"
+	    exit 1
+	    ;;
 esac

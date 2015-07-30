@@ -11,7 +11,7 @@ os.system('clear')
 ROOT=sys.path[0]
 os.environ['ROOT']=str(ROOT)
 
-print '\033[0;31;40m'
+print '\033[0;32;40m'
 print '^' * 81
 print "脚本作用：引导安装或升级。请根据提示输入数字继续。"
 print '更多内容请访问："https://saintic.com/"'

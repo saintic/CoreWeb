@@ -11,10 +11,11 @@ os.system('clear')
 ROOT=sys.path[0]
 os.environ['ROOT']=str(ROOT)
 
-print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+print '\033[0;31;40m'
+print '^' * 81
 print "脚本作用：引导安装或升级。请根据提示输入数字继续。"
 print '更多内容请访问："https://saintic.com/"'
-print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+print '^' * 81
 print "安装服务类型，格式为数字代码:服务类型"
 print "  1:Nginx"
 print "  2:Httpd"
@@ -28,12 +29,13 @@ print "  9:LANMP"
 print "  10:tomcat"
 print "  11:memcache"
 print "  12:memcached"
-print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+print '^' * 81
 print "升级服务版本"
 print "  0:update the service version!"
-print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+print '^' * 81
 print "退出请输入\"q\"或\"Q\"."
-print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+print '^' * 81
+print '\033[0m'
 
 __codenum=raw_input('请选择数字代码安装或升级:')
 

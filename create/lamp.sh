@@ -133,11 +133,11 @@ make test <<EOF
 n
 EOF
 make install
-local LINE1=$(sed -i '/DirectoryIndex/ d' ${APP_PATH}/apache/conf/httpd.conf | grep -n -s -A 1 "IfModule dir_module" ${APP_PATH}/apache/conf/httpd.conf | grep ":" | awk -F : '{print $1}')
-sed -i "${LINE1}a DirectoryIndex index.html index.php" ${APP_PATH}/apache/conf/httpd.conf
-local LINE2=$(grep -n "<IfModule mime_module>" ${APP_PATH}/apache/conf/httpd.conf | grep ":" | awk -F : '{print $1}')
-sed -i "${LINE2}a AddType application/x-httpd-php .php" ${APP_PATH}/apache/conf/httpd.conf
-sed -i 's/DirectoryIndex/DirectoryIndex index.php index.htm/g' ${APP_PATH}/apache/conf/httpd.conf
+local LINE1=$(sed -i '/DirectoryIndex/ d' /etc/httpd/conf/httpd.conf | grep -n -s -A 1 "IfModule dir_module" /etc/httpd/conf/httpd.conf | grep ":" | awk -F : '{print $1}')
+sed -i "${LINE1}a DirectoryIndex index.html index.php" /etc/httpd/conf/httpd.conf
+local LINE2=$(grep -n "<IfModule mime_module>" /etc/httpd/conf/httpd.conf | grep ":" | awk -F : '{print $1}')
+sed -i "${LINE2}a AddType application/x-httpd-php .php" /etc/httpd/conf/httpd.conf
+sed -i 's/DirectoryIndex/DirectoryIndex index.php index.htm/g' /etc/httpd/conf/httpd.conf
 cp -f ${PACKAGE_PATH}/php-${PHP_VERSION}/php.ini-production ${APP_PATH}/php/etc/php.ini
 sed -i 's/post_max_size = 8M/post_max_size = 10M/g' ${APP_PATH}/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 10M/g' ${APP_PATH}/php/etc/php.ini

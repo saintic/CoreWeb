@@ -72,9 +72,9 @@ cat >> /etc/init.d/httpd <<EOF
 EOF
 chmod +x /etc/init.d/httpd
 chkconfig --add httpd && chkconfig httpd on
-sed -i "s/Listen 80/Listen 81/g" /etc/httpd/conf/httpd.conf
-sed -i "s/#ServerName www.example.com:80/ServerName www.saintic.com/g" /etc/httpd/conf/httpd.conf
-sed -i "s/ServerAdmin you@example.com/ServerAdmin admin@saintic.com/" /etc/httpd/conf/httpd.conf
+sed -i "s/Listen 80/Listen 81/g" /etc/httpd/httpd.conf
+sed -i "s/#ServerName www.example.com:80/ServerName www.saintic.com/g" /etc/httpd/httpd.conf
+sed -i "s/ServerAdmin you@example.com/ServerAdmin admin@saintic.com/" /etc/httpd/httpd.conf
 ${APP_PATH}/apache/bin/apachectl -t
 if [ $? -eq  ]; then
   echo -n "Start:/etc/init.d/httpd start" ;
@@ -164,11 +164,11 @@ make test <<EOF
 n
 EOF
 make install
-local LINE1=$(sed -i '/DirectoryIndex/ d' /etc/httpd/conf/httpd.conf | grep -n -s -A 1 "IfModule dir_module" /etc/httpd/conf/httpd.conf | grep ":" | awk -F : '{print $1}')
-sed -i "${LINE1}a DirectoryIndex index.html index.php" /etc/httpd/conf/httpd.conf
-local LINE2=$(grep -n "<IfModule mime_module>" /etc/httpd/conf/httpd.conf | grep ":" | awk -F : '{print $1}')
-sed -i "${LINE2}a AddType application/x-httpd-php .php" /etc/httpd/conf/httpd.conf
-sed -i 's/DirectoryIndex/DirectoryIndex index.php index.htm/g' /etc/httpd/conf/httpd.conf
+local LINE1=$(sed -i '/DirectoryIndex/ d' /etc/httpd/httpd.conf | grep -n -s -A 1 "IfModule dir_module" /etc/httpd/httpd.conf | grep ":" | awk -F : '{print $1}')
+sed -i "${LINE1}a DirectoryIndex index.html index.php" /etc/httpd/httpd.conf
+local LINE2=$(grep -n "<IfModule mime_module>" /etc/httpd/httpd.conf | grep ":" | awk -F : '{print $1}')
+sed -i "${LINE2}a AddType application/x-httpd-php .php" /etc/httpd/httpd.conf
+sed -i 's/DirectoryIndex/DirectoryIndex index.php index.htm/g' /etc/httpd/httpd.conf
 
 [ -f ${APP_PATH}/php/etc/php-fpm.conf.default ] && cd ${APP_PATH}/php/etc/ && cp php-fpm.conf.default php-fpm.conf && fpm
 

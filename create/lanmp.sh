@@ -121,6 +121,7 @@ chkconfig --add mysqld ; chkconfig mysqld on
 }
 
 fpm() {
+local user=www
 sed -i "s@^pm.max_children.*@pm.max_children = $(($MEM/2/20))@" php-fpm.conf
 sed -i "s@^pm.start_servers.*@pm.start_servers = $(($MEM/2/30))@" php-fpm.conf
 sed -i "s@^pm.min_spare_servers.*@pm.min_spare_servers = $(($MEM/2/40))@" php-fpm.conf
@@ -171,7 +172,8 @@ sed -i "${LINE2}a AddType application/x-httpd-php .php" /etc/httpd/httpd.conf
 sed -i 's/DirectoryIndex/DirectoryIndex index.php index.htm/g' /etc/httpd/httpd.conf
 
 [ -f ${APP_PATH}/php/etc/php-fpm.conf.default ] && cd ${APP_PATH}/php/etc/ && cp php-fpm.conf.default php-fpm.conf && fpm
-
+init_fpm="${PACKAGE_PATH}/php-5.4.33/sapi/fpm/init.d.php-fpm"
+[ -f $init_fpm ] && cp $init_fpm /etc/init.d/php-fpm && chmod +x /etc/init.d/php-fpm && chkconfig --add php-fpm && chkconfig php-fpm on
 cp -f ${PACKAGE_PATH}/php-${PHP_VERSION}/php.ini-production ${APP_PATH}/php/etc/php.ini
 sed -i 's/post_max_size = 8M/post_max_size = 10M/g' ${APP_PATH}/php/etc/php.ini
 sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 10M/g' ${APP_PATH}/php/etc/php.ini

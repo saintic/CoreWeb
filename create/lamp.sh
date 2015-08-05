@@ -75,7 +75,7 @@ chkconfig --add httpd && chkconfig httpd on
 sed -i "s/#ServerName www.example.com:80/ServerName www.saintic.com/g" /etc/httpd/httpd.conf
 sed -i "s/ServerAdmin you@example.com/ServerAdmin admin@saintic.com/" /etc/httpd/httpd.conf
 ${APP_PATH}/apache/bin/apachectl -t
-if [ $? -eq  ]; then
+if [ $? -eq 0 ]; then
   /etc/init.d/httpd start
 else
   echo "Please check httpd.conf"

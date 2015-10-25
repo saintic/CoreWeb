@@ -1,9 +1,10 @@
 #!/bin/bash
 #Author:www.saintic.com
 #Notes:转载请注明出处！
-
 ROOT_INSTALL=$(cd `dirname $0`; pwd)
 . ${ROOT_INSTALL}/../functions
+clear
+echo "执行install_server.sh进行redis配置，请注意查看屏幕输出！"
 read -p "是否需要PHP扩展？(y/n)" ENABLE_PHP_API
 if [ $ENABLE_PHP_API = "y" ] || [ $ENABLE_PHP_API = "Y" ]; then
 	read -p "请输入PHP安装目录，默认/usr/local/php则回车：" PHP_HOME
@@ -11,7 +12,7 @@ fi
 if [ "$PHP_HOME" = "" ]; then
 	PHP_HOME=/usr/local/php
 fi
-clear
+
 HEAD && DOWNLOAD_REDIS || exit 1
 cd $PACKAGE_PATH ; tar zxf redis-2.8.17.tar.gz
 cd redis-2.8.17

@@ -1,37 +1,45 @@
-: :||:<<COMMENTS
-Author:www.saintic.com
-Note: Global functions
-COMMENTS
+# -*-Shell-script-*-
+#
+# functions     This file contains functions for CoreWeb
+# 
+# Author:www.saintic.com
+source /etc/profile
 
-unset HEAD
-unset DOWNLOAD_NGINX
-unset DOWNLOAD_APACHE
-unset DOWNLOAD_MYSQL
-unset DOWNLOAD_MEMCACHE
-unset DOWNLOAD_MONGO
-unset DOWNLOAD_PHP
-unset SH_CODE_NUM_1
-unset SH_CODE_NUM_2
-unset SH_CODE_NUM_3
-unset SH_CODE_NUM_4
-unset SH_CODE_NUM_5
-unset SH_CODE_NUM_6
-unset SH_CODE_NUM_7
+: :||:<<VARIABLES
+Note: Global Variables
+Note: Global functions
+1. HEAD function:
+	Make sure everything is OK! Than next.
+2. error function:
+	If the script is running wrong, then you should use the error function, to ensure that friendly output, improve the user experience.
+VARIABLES
 
 ROOT=$(pwd)
 PACKAGE_PATH=${ROOT}/software
-ARCH=$(uname -p)
 downloadlink="https://saintic.top/software"
+ARCH=$(uname --machine)
+CPU=$(grep "processor" /proc/cpuinfo | wc -l)
+MEM=$(free -m | awk '/Mem:/{print $2}')
+PROCESS=$(expr `ps aux | grep -v "grep" | grep -v wc | wc -l` - 2)
+SERVER_IP=$(echo $SSH_CONNECTION | awk '{print $3}')
+CLIENT_IP=$(echo $SSH_CONNECTION | awk '{print $1}')
+SERVER_NAME=$HOSTNAME
+SYS_VERSION=$(awk -F "release" '{print $2}' /etc/redhat-release | awk '{print $1}' | awk -F . '{print $1}')
+
 function HEAD() {
 	if [ $(id -u) != "0" ]; then
     	echo "Error:请确保以root用户执行此脚本！"
     	exit 1
 	fi
-	SESTATE=$(sestatus | nl | wc -l)
+	SESTATE=$(sestatus | wc -l)
 	if [ "$SESTATE" != "1" ]; then
 		sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 		sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/selinux/config &> /dev/null
 	fi
+}
+
+function error() {
+	echo "Error:Please check this script and input/output!"
 }
 
 function DOWNLOAD_NGINX() {
@@ -45,8 +53,7 @@ function DOWNLOAD_NGINX() {
 
 function DOWNLOAD_APACHE() {
 	cd $PACKAGE_PATH
-	wget -c ${downloadlink}/web/Apache.zip
-	unzip Apache.zip -d $PACKAGE_PATH
+	wget ${downloadlink}/web/Apache.zip
 }
 
 function DOWNLOAD_MYSQL() {
@@ -56,15 +63,17 @@ function DOWNLOAD_MYSQL() {
 
 function DOWNLOAD_MEMCACHE() {
 	cd $PACKAGE_PATH
-	wget -c ${downloadlink}/nosql/memcached-api.tar.gz
-	wget -c ${downloadlink}/nosql/libevent-2.0.21-stable.tar.gz
-	wget -c ${downloadlink}/nosql/memcached-1.4.21.tar.gz
-	wget -c ${downloadlink}/nosql/memcache-api.tar.gz
+	wget ${downloadlink}/nosql/libmemcached-1.0.18.tar.gz
+	wget ${downloadlink}/nosql/memcached-api.tar.gz
+	wget ${downloadlink}/nosql/libevent-2.0.21-stable.tar.gz
+	wget ${downloadlink}/nosql/memcached-1.4.21.tar.gz
+	wget ${downloadlink}/nosql/memcache-api.tar.gz
 	wget -c ${downloadlink}/nosql/memadmin-1.0.12.tar.gz
 }
 
 function DOWNLOAD_MONGO() {
 	cd $PACKAGE_PATH
+	yum -y install bzip2 gzip wget
 	if [ $ARCH = "x86_64" ]; then
 		wget -c ${downloadlink}/nosql/mongodb-linux-x86_64-2.6.5.tgz
 	else
@@ -76,11 +85,12 @@ function DOWNLOAD_MONGO() {
 
 function DOWNLOAD_PHP() {
 	yum -y install wget unzip
+	cd $PACKAGE_PATH
 	wget -c ${downloadlink}/web/php.zip
 }
 
 function DOWNLOAD_REDIS() {
-	yum -y install gcc gcc-c++
+	yum -y install gcc gcc-c++ tcl
 	cd $PACKAGE_PATH
 	wget -c ${downloadlink}/nosql/redis-2.8.17.tar.gz
 	wget -c ${downloadlink}/nosql/redis-api.tar.gz
@@ -99,7 +109,7 @@ function SH_CODE_NUM_3() {
 }
 
 function SH_CODE_NUM_4() {
-	sh ${ROOT}/install/memcached_install.sh
+	sh ${ROOT}/install/php_install.sh
 }
 
 function SH_CODE_NUM_5() {
@@ -107,7 +117,7 @@ function SH_CODE_NUM_5() {
 }
 
 function SH_CODE_NUM_6() {
-	sh ${ROOT}/install/php_install.sh
+	sh ${ROOT}/install/memcached_install.sh
 }
 
 function SH_CODE_NUM_7() {

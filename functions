@@ -1,0 +1,115 @@
+: :||:<<COMMENTS
+Author:www.saintic.com
+Note: Global functions
+COMMENTS
+
+unset HEAD
+unset DOWNLOAD_NGINX
+unset DOWNLOAD_APACHE
+unset DOWNLOAD_MYSQL
+unset DOWNLOAD_MEMCACHE
+unset DOWNLOAD_MONGO
+unset DOWNLOAD_PHP
+unset SH_CODE_NUM_1
+unset SH_CODE_NUM_2
+unset SH_CODE_NUM_3
+unset SH_CODE_NUM_4
+unset SH_CODE_NUM_5
+unset SH_CODE_NUM_6
+unset SH_CODE_NUM_7
+
+ROOT=$(pwd)
+PACKAGE_PATH=${ROOT}/software
+ARCH=$(uname -p)
+downloadlink="https://saintic.top/software"
+function HEAD() {
+	if [ $(id -u) != "0" ]; then
+    	echo "Error:请确保以root用户执行此脚本！"
+    	exit 1
+	fi
+	SESTATE=$(sestatus | nl | wc -l)
+	if [ "$SESTATE" != "1" ]; then
+		sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+		sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/selinux/config &> /dev/null
+	fi
+}
+
+function DOWNLOAD_NGINX() {
+	yum -y install wget 
+	cd $PACKAGE_PATH
+	wget -c ${downloadlink}/web/nginx-1.6.2.tar.gz
+	if [ $? != "0" ]; then
+		wget -c http://nginx.org/download/nginx-1.6.2.tar.gz
+	fi
+}
+
+function DOWNLOAD_APACHE() {
+	cd $PACKAGE_PATH
+	wget -c ${downloadlink}/web/Apache.zip
+	unzip Apache.zip -d $PACKAGE_PATH
+}
+
+function DOWNLOAD_MYSQL() {
+	cd $PACKAGE_PATH
+	wget -c ${downloadlink}/web/mysql-5.5.20.tar.gz
+}
+
+function DOWNLOAD_MEMCACHE() {
+	cd $PACKAGE_PATH
+	wget -c ${downloadlink}/nosql/memcached-api.tar.gz
+	wget -c ${downloadlink}/nosql/libevent-2.0.21-stable.tar.gz
+	wget -c ${downloadlink}/nosql/memcached-1.4.21.tar.gz
+	wget -c ${downloadlink}/nosql/memcache-api.tar.gz
+	wget -c ${downloadlink}/nosql/memadmin-1.0.12.tar.gz
+}
+
+function DOWNLOAD_MONGO() {
+	cd $PACKAGE_PATH
+	if [ $ARCH = "x86_64" ]; then
+		wget -c ${downloadlink}/nosql/mongodb-linux-x86_64-2.6.5.tgz
+	else
+		wget ${downloadlink}/nosql/mongodb-linux-i686-2.6.5.gz
+	fi
+	wget ${downloadlink}/nosql/rockmongo-master.zip
+	wget ${downloadlink}/nosql/mongo-1.5.7.tgz
+}
+
+function DOWNLOAD_PHP() {
+	yum -y install wget unzip
+	wget -c ${downloadlink}/web/php.zip
+}
+
+function DOWNLOAD_REDIS() {
+	yum -y install gcc gcc-c++
+	cd $PACKAGE_PATH
+	wget -c ${downloadlink}/nosql/redis-2.8.17.tar.gz
+	wget -c ${downloadlink}/nosql/redis-api.tar.gz
+}
+
+function SH_CODE_NUM_1() {
+	sh ${ROOT}/install/nginx_install.sh
+}
+
+function SH_CODE_NUM_2() {
+	sh ${ROOT}/install/apache_install.sh
+}
+
+function SH_CODE_NUM_3() {
+	sh ${ROOT}/install/mysql_install.sh
+}
+
+function SH_CODE_NUM_4() {
+	sh ${ROOT}/install/memcached_install.sh
+}
+
+function SH_CODE_NUM_5() {
+	sh ${ROOT}/install/mongodb_install.sh
+}
+
+function SH_CODE_NUM_6() {
+	sh ${ROOT}/install/php_install.sh
+}
+
+function SH_CODE_NUM_7() {
+	sh ${ROOT}/install/redis_install.sh
+}

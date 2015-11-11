@@ -28,7 +28,6 @@ print "  8:LAMP"
 print "  9:LANMP"
 print "  10:tomcat"
 print "  11:memcache"
-print "  12:memcached"
 print '^' * 81
 print "升级服务版本"
 print "  0:update the service version!"
@@ -80,8 +79,6 @@ else:
             os.system("sh $ROOT/create/tomcat.sh")
         elif __select == 11:
             os.system("sh $ROOT/create/memcache.sh")
-        elif __select == 12:
-            os.system("sh $ROOT/create/memcached.sh")
         else:
             print "未支持的服务"
     else:

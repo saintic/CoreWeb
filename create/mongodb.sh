@@ -82,7 +82,8 @@ tar zxf mongodb-linux-i686-3.0.3.tgz ; mv mongodb-linux-i686-3.0.3 ${APP_PATH}/m
 fi
 MongoConfig
 ln -s ${APP_PATH}/mongodb/bin/* /usr/bin/
-mongod -f ${APP_PATH}/mongodb/mongod.conf &
+ln -s ${APP_PATH}/mongodb/mongod.conf /etc/mongod.conf
+mongod -f /etc/mongod.conf &
 }
 
 api() {

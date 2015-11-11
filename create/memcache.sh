@@ -4,6 +4,7 @@ clear
 PACKAGE_PATH="/data/software"
 APP_PATH="/data/app"
 lock="/var/lock/subsys/paas.sdi.lock"
+#memcache是服务器端程序，主程序名memcached；php两个扩展memcache和memcached，后者是基于libmemcached协议开发的C语言版本，更加高级。
 
 cat<<EOF
 ####################################################
@@ -58,7 +59,19 @@ tar zxf memcached-1.4.24.tar.gz ; cd memcached-1.4.24
 ./configure --with-libevent=/usr && make && make install
 }
 
+
+CREATE_MEMCACHED() {
+#php memcached需要libmemcached协议
+if [ -f $PACKAGE_PATH/libmemcached-1.0.18.tar.gz ] || [ -d $PACKAGE_PATH/libmemcached-1.0.18 ] ; then
+  rm -rf $PACKAGE_PATH/libmemcached-1.0.18*
+fi
+cd $PACKAGE_PATH ; wget -c https://launchpadlibrarian.net/165454254/libmemcached-1.0.18.tar.gz
+tar zxf libmemcached-1.0.18.tar.gz ; cd libmemcached-1.0.18
+./configure --prefix=/usr/local/libmemcached --with-memcached && make && make install
+}
+
 api() {
+#php client
 local memcache_api_version=2.2.7
 cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/memcache-${memcache_api_version}.tgz
 tar zxf memcache-${memcache_api_version}.tgz ; cd memcache-$memcache_api_version
@@ -71,12 +84,28 @@ EOF
 make install > /tmp/memcache-api
 local EXT3=$(tail -1 /tmp/memcache-api | awk -F: '{print $2}' | awk '{print $1}')
 echo "extension=${EXT3}memcache.so" >> ${APP_PATH}/php/etc/php.ini
+
+local memcached_api_version=2.2.0
+cd $PACKAGE_PATH ; wget -c http://pecl.php.net/get/memcached-${memcached_api_version}.tgz
+tar zxf memcached-${memcached_api_version}.tgz ; cd memcached-$memcached_api_version
+${APP_PATH}/php/bin/phpize
+./configure --enable-memcached --with-libmemcached-dir=/usr/local/libmemcached/ --with-php-config=${APP_PATH}/php/bin/php-config  --enable-memcached-json --disable-memcached-sasl
+make
+make test <<EOF
+n
+EOF
+make install > /tmp/memcached-api
+local EXT4=$(tail -1 /tmp/memcached-api | awk -F: '{print $2}' | awk '{print $1}')
+echo "extension=${EXT4}memcached.so" >> ${APP_PATH}/php/etc/php.ini
 }
 
-memcache() {
+memcached() {
 CREATE_MEMCACHE
+CREATE_MEMCACHED
 #api
 }
 
-HEAD && memcache || ERROR
+HEAD && memcached || ERROR
+#Service Daemon
+/usr/local/bin/memcached -d -u root && echo "/usr/local/bin/memcached -d -u root" >> /etc/rc.local
 

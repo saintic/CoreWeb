@@ -83,7 +83,7 @@ fi
 MongoConfig
 ln -s ${APP_PATH}/mongodb/bin/* /usr/bin/
 ln -s ${APP_PATH}/mongodb/mongod.conf /etc/mongod.conf
-mongod -f /etc/mongod.conf &
+/usr/bin/mongod -f /etc/mongod.conf &
 }
 
 api() {

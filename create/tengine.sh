@@ -36,7 +36,15 @@ function HEAD() {
 CREATE_TENGINE() {
 id -u www &> /dev/null || useradd -M -s /sbin/nologin www
 [ -d $PACKAGE_PATH/tengine-$tengine_VERSION ] && rm -rf $PACKAGE_PATH/tengine-$tengine_VERSION
-yum -y install tar bzip2 gzip pcre pcre-devel gcc gcc-c++ zlib-devel wget openssl-devel jemalloc
+yum -y install tar bzip2 gzip pcre pcre-devel gcc gcc-c++ zlib-devel wget openssl-devel
+cd $PACKAGE_PATH
+wget http://www.canonware.com/download/jemalloc/jemalloc-3.4.0.tar.bz2
+tar xjf jemalloc-3.4.0.tar.bz2
+cd jemalloc-3.4.0
+./configure
+make && make install
+echo '/usr/local/lib' >> /etc/ld.so.conf
+ldconfig
 cd $PACKAGE_PATH
 wget -c http://tengine.taobao.org/download/tengine-${TENGINE_VERSION}.tar.gz
 tar zxf tengine-${TENGINE_VERSION}.tar.gz
@@ -45,7 +53,7 @@ cd tengine-$TENGINE_VERSION
 ${APP_PATH}/tengine/sbin/nginx -t &> /dev/null
 ln -s ${APP_PATH}/tengine/sbin/nginx /usr/sbin/nginx
 if [ $? -eq 0 ]; then
-  echo "Start:/usr/sbin/nginx" ; /usr/sbin/tengine
+  echo "Start:/usr/sbin/nginx" ; /usr/sbin/nginx
   echo "/usr/sbin/nginx" >> /etc/rc.local
 else
   echo "Please check nginx.conf" && exit

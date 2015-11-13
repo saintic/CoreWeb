@@ -52,7 +52,7 @@ else
 fi
 }
 
-HEAD && CREATE_tengine || exit 1
+HEAD && CREATE_TENGINE || echo "HEAD function is wrong, quit."
 if [ `ps aux | grep -v grep | grep tengine |wc -l` -ge 1 ]; then
   echo "Start Successful."
 else

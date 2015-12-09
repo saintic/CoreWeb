@@ -37,22 +37,14 @@ print '^' * 81
 print '\033[0m'
 
 __codenum=raw_input('请选择数字代码安装或升级:')
-
-def str2int(s):
-    if not isinstance(s,(int,str)):
-        raise TypeError('bad operand type')
-    def char2num(s):
-        return {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}[s]
-    return reduce(lambda x,y: x*10+y, map(char2num, s))
-
-__service_list={0:'Update Service',1:'Nginx',2:'Httpd',3:'MySQL',4:'PHP',5:'Redis',6:'MongoDB',7:'LNMP',8:'LAMP',9:'LANMP',0:'update',10:'tomcat',11:'memcache',12:'memcached'}
+__service_list={0:'Update Service', 1:'Nginx', 2:'Httpd', 3:'MySQL', 4:'PHP', 5:'Redis', 6:'MongoDB', 7:'LNMP', 8:'LAMP', 9:'LANMP', 10:'tomcat', 11:'memcache', 12:'memcached'}
 
 if __codenum == "q":
     exit()
 elif __codenum == "Q":
     exit()
 else:
-    __select=str2int(__codenum)
+    __select=int(__codenum)
     if __select in __service_list:
         print '你的选择：',__service_list[__select]
         if __select == 0:

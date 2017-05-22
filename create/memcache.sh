@@ -41,7 +41,7 @@ function ERROR() {
 }
 
 CREATE_MEMCACHE() {
-yum -y install wget tar gzip bzip2 zlib zlib-devel gcc gcc-c++ openssl-devel json json-devel
+yum -y install wget tar gzip bzip2 zlib zlib-devel gcc gcc-c++ openssl-devel json json-devel libevent-devel
 if [ -f $PACKAGE_PATH/libevent-2.0.22-stable.tar.gz ] || [ -d $PACKAGE_PATH/libevent-2.0.22-stable ] ; then
   rm -rf $PACKAGE_PATH/libevent-2.0.22-stable
 fi

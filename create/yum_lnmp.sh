@@ -64,6 +64,7 @@ EOF
     sed -i 's/;listen.group = nobody/listen.group = www/' /etc/php-fpm.d/www.conf
     sed -i 's/pm.max_children = 50/pm.max_children = 300/' /etc/php-fpm.d/www.conf
     sed -i 's#;pm.status_path.*#pm.status_path = /xingka_status#' /etc/php-fpm.d/www.conf
+    sed -i 's/^;listen.backlog = -1/listen.backlog = 1024/' /etc/php-fpm.d/www.conf
 
     chown -R www.www /var/lib/php/session
     chmod -R 777 /var/lib/php/session
